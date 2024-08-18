@@ -123,7 +123,63 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/a8a0f690-cbb4-490e-96a5-fe45379e1285"><img src="https://github.com/user-attachments/assets/a8a0f690-cbb4-490e-96a5-fe45379e1285" alt="QQ20240819-002759" style="max-width: 100%;"></a><br>
 ,为了验证，可以访问<a href="http://%E4%BD%A0%E7%9A%84ip/upload-labs/%E4%BD%A0%E7%9A%84%E6%9C%A8%E9%A9%AC%E6%96%87%E4%BB%B6%E5%90%8D%EF%BC%88%E5%9C%A8bp%E4%B8%AD%E4%BF%AE%E6%94%B9%E5%90%8E%E7%9A%84%EF%BC%89%EF%BC%8C%E7%9C%8B%E5%88%B0%E7%A9%BA%E7%99%BD%E7%9A%84%E9%A1%B5%E9%9D%A2%E4%B8%80%E8%88%AC%E5%B0%B1%E6%98%AF%E6%88%90%E5%8A%9F%E4%BA%86%EF%BC%8C%E5%A6%82%EF%BC%9A" rel="nofollow">http://你的ip/upload-labs/你的木马文件名（在bp中修改后的），看到空白的页面一般就是成功了，如：</a><br>
 <a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/de799a7d-3c7e-49c1-8ce1-424c73e4f272"><img src="https://github.com/user-attachments/assets/de799a7d-3c7e-49c1-8ce1-424c73e4f272" alt="QQ20240819-003057" style="max-width: 100%;"></a><br>
-，dang当然也可以通过菜刀或者中国蚁剑进行连接操作，连接成功也说明木马上传成功！</p></div>
+，当然也可以通过菜刀或者中国蚁剑进行连接操作，连接成功也说明木马上传成功！</p>
+<p>#第二关</p>
+<h2>源码展示</h2>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span>is_upload</span> = <span class="pl-c1">false</span>;
+<span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-c1">null</span>;
+<span class="pl-k">if</span> (<span class="pl-en">isset</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_POST</span></span>[<span class="pl-s">'<span class="pl-s">submit</span>'</span>])) {
+    <span class="pl-k">if</span> (<span class="pl-en">file_exists</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span>)) {
+        <span class="pl-k">if</span> ((<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == <span class="pl-s">'<span class="pl-s">image/jpeg</span>'</span>) || (<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == <span class="pl-s">'<span class="pl-s">image/png</span>'</span>) || (<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == <span class="pl-s">'<span class="pl-s">image/gif</span>'</span>)) {
+            <span class="pl-k">if</span> (<span class="pl-en">move_uploaded_file</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">tmp_name</span>'</span>], <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span> . <span class="pl-s">'<span class="pl-s">/</span>'</span> . <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">name</span>'</span>])) {
+                <span class="pl-s1"><span class="pl-c1">$</span>img_path</span> = <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span> . <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">name</span>'</span>];
+                <span class="pl-s1"><span class="pl-c1">$</span>is_upload</span> = <span class="pl-c1">true</span>;
+
+            }
+        } <span class="pl-k">else</span> {
+            <span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-s">'<span class="pl-s">文件类型不正确，请重新上传！</span>'</span>;
+        }
+    } <span class="pl-k">else</span> {
+        <span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span>.<span class="pl-s">'<span class="pl-s">文件夹不存在,请手工创建！</span>'</span>;
+    }
+}</pre></div>
+<h2>分析</h2>
+<p>从代码格式就可以看出这是后端的检测了，查看代码可以知道，只放行类型为</p>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == <span class="pl-s">'<span class="pl-s">image/jpeg</span>'</span>) || (<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == <span class="pl-s">'<span class="pl-s">image/png</span>'</span>) || (<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == <span class="pl-s">'<span class="pl-s">image/gif</span></span>
+<span class="pl-s"><span class="pl-s"></span>'</span>```
+的文件，那这一句话是什么意思呢？询问gpt可以得知：
+<span class="pl-c">### 1 $_FILES['upload_file']['type']</span>
+<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>]是一个<span class="pl-c1">PHP</span>超全局数组，用于处理通过<span class="pl-c1">HTTP</span> <span class="pl-c1">POST</span>方法上传的文件，假如我上传一个名为pass.php的文件夹
+```php
+<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>] = <span class="pl-en">array</span>(
+    <span class="pl-s">'<span class="pl-s">name</span>'</span> =&gt; <span class="pl-s">'<span class="pl-s">pass.php</span>'</span>,          <span class="pl-c">// 上传文件的原始文件名</span>
+    <span class="pl-s">'<span class="pl-s">type</span>'</span> =&gt; <span class="pl-s">'<span class="pl-s">text/plain</span>'</span>,        <span class="pl-c">// 文件的 MIME 类型（取决于服务器和浏览器的判断）</span>
+    <span class="pl-s">'<span class="pl-s">tmp_name</span>'</span> =&gt; <span class="pl-s">'<span class="pl-s">/tmp/phpYzdqkD</span>'</span>,<span class="pl-c">// 文件上传后的临时存储路径</span>
+    <span class="pl-s">'<span class="pl-s">error</span>'</span> =&gt; <span class="pl-c1">0</span>,                  <span class="pl-c">// 上传过程中出现的错误代码，0 表示没有错误</span>
+    <span class="pl-s">'<span class="pl-s">size</span>'</span> =&gt; <span class="pl-c1">1234</span>                 // 文件的大小（以字节为单位）
+);</pre></div>
+<p>所以这串代码是先选择包含上传文件信息的upload_files，再选择其中的type</p>
+<h3>2 MIME类型</h3>
+<p>MIME用于描述文件的内容类型，当浏览器收到一个HTML文件时，MIME类型会告诉他这个文件的格式以及他应如何解析和现实内容<br>
+MIME类型由两部分组成，用斜杠/分割</p>
+<h4>主类型（type）：</h4>
+<p>表示数据的主要类别。例如，text（文本文件）、image（图片文件）、application（应用程序数据）、audio（音频文件）、video（视频文件）等。</p>
+<h4>子类型（subtype）：</h4>
+<p>表示主类型中的具体格式。例如，plain 表示纯文本，jpeg 表示 JPEG 图片，json 表示 JSON 数据。</p>
+<h3>3 对应BP</h3>
+<p>在BP拦截到的请求包中，$_FILES['upload_file']通常在Content-Type或者Content-Disposition部分。</p>
+<h2>绕过策略</h2>
+<p>经过以上分析，我们知道可以通过BP拦截后修改请求包中的Content-Type或者Content-Disposition来满足源代码的要求即可。</p>
+<h3>方法一</h3>
+<p>这次没有前端检测，直接上传我们的一句话代码，如ip.php！<br>
+打开BP拦截（养成习惯），回到网页选择ip.php木马进行上传，BP拦截后对Content-Type进行修改，改为png,jpg,gif的MIME类型放行<br>
+上传成功！</p>
+<h3>方法二</h3>
+<p>其实可以直接按照Pass01的方法，先将木马后缀修改为png再进行上传，这是浏览器看到的MIME便符合要求了，但是同样的，一个png文件上传后，如果没有.htacess这类文件的帮助，其实是不能承担木马的功能的，所以还需要在BP中修改filename的后缀名为php。这里不做赘述，方法和Pass01一模一样。</p>
+<h3>检测</h3>
+<p>为了验证上传成功和木马文件内容的正确，继续访问 你的ip/upload-labs/upload/你上传的木马文件，查看到页面一面空白后说明一切正常<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/56f9dd1c-f387-47bf-9536-45f106a8f475"><img src="https://github.com/user-attachments/assets/56f9dd1c-f387-47bf-9536-45f106a8f475" alt="QQ20240819-012404" style="max-width: 100%;"></a><br>
+也可以通过中国蚁剑进行连接测试，连接成功说明任务圆满完成！</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
@@ -185,7 +241,7 @@ document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
 cmButton=document.getElementById("cmButton");
     span=document.createElement("span");
     span.setAttribute("class","Counter");
-    span.innerHTML="1";
+    span.innerHTML="3";
     cmButton.appendChild(span);
 
 

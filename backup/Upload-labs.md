@@ -40,6 +40,68 @@ function checkFile() {
 ![QQ20240819-002759](https://github.com/user-attachments/assets/a8a0f690-cbb4-490e-96a5-fe45379e1285)
 ,为了验证，可以访问http://你的ip/upload-labs/你的木马文件名（在bp中修改后的），看到空白的页面一般就是成功了，如：
 ![QQ20240819-003057](https://github.com/user-attachments/assets/de799a7d-3c7e-49c1-8ce1-424c73e4f272)
-，dang当然也可以通过菜刀或者中国蚁剑进行连接操作，连接成功也说明木马上传成功！
+，当然也可以通过菜刀或者中国蚁剑进行连接操作，连接成功也说明木马上传成功！
+
+#第二关
+## 源码展示
+```php
+$is_upload = false;
+$msg = null;
+if (isset($_POST['submit'])) {
+    if (file_exists($UPLOAD_ADDR)) {
+        if (($_FILES['upload_file']['type'] == 'image/jpeg') || ($_FILES['upload_file']['type'] == 'image/png') || ($_FILES['upload_file']['type'] == 'image/gif')) {
+            if (move_uploaded_file($_FILES['upload_file']['tmp_name'], $UPLOAD_ADDR . '/' . $_FILES['upload_file']['name'])) {
+                $img_path = $UPLOAD_ADDR . $_FILES['upload_file']['name'];
+                $is_upload = true;
+
+            }
+        } else {
+            $msg = '文件类型不正确，请重新上传！';
+        }
+    } else {
+        $msg = $UPLOAD_ADDR.'文件夹不存在,请手工创建！';
+    }
+}
+```
+
+## 分析
+从代码格式就可以看出这是后端的检测了，查看代码可以知道，只放行类型为
+```php 
+$_FILES['upload_file']['type'] == 'image/jpeg') || ($_FILES['upload_file']['type'] == 'image/png') || ($_FILES['upload_file']['type'] == 'image/gif
+'```
+的文件，那这一句话是什么意思呢？询问gpt可以得知：
+### 1 $_FILES['upload_file']['type']
+$_FILES['upload_file']['type']是一个PHP超全局数组，用于处理通过HTTP POST方法上传的文件，假如我上传一个名为pass.php的文件夹
+```php
+$_FILES['upload_file'] = array(
+    'name' => 'pass.php',          // 上传文件的原始文件名
+    'type' => 'text/plain',        // 文件的 MIME 类型（取决于服务器和浏览器的判断）
+    'tmp_name' => '/tmp/phpYzdqkD',// 文件上传后的临时存储路径
+    'error' => 0,                  // 上传过程中出现的错误代码，0 表示没有错误
+    'size' => 1234                 // 文件的大小（以字节为单位）
+);
+```
+所以这串代码是先选择包含上传文件信息的upload_files，再选择其中的type
+### 2 MIME类型
+MIME用于描述文件的内容类型，当浏览器收到一个HTML文件时，MIME类型会告诉他这个文件的格式以及他应如何解析和现实内容
+MIME类型由两部分组成，用斜杠/分割
+#### 主类型（type）：
+表示数据的主要类别。例如，text（文本文件）、image（图片文件）、application（应用程序数据）、audio（音频文件）、video（视频文件）等。
+#### 子类型（subtype）：
+表示主类型中的具体格式。例如，plain 表示纯文本，jpeg 表示 JPEG 图片，json 表示 JSON 数据。
+### 3 对应BP
+在BP拦截到的请求包中，$_FILES['upload_file']通常在Content-Type或者Content-Disposition部分。
+## 绕过策略
+经过以上分析，我们知道可以通过BP拦截后修改请求包中的Content-Type或者Content-Disposition来满足源代码的要求即可。
+### 方法一
+这次没有前端检测，直接上传我们的一句话代码，如ip.php！
+打开BP拦截（养成习惯），回到网页选择ip.php木马进行上传，BP拦截后对Content-Type进行修改，改为png,jpg,gif的MIME类型放行
+上传成功！
+### 方法二
+其实可以直接按照Pass01的方法，先将木马后缀修改为png再进行上传，这是浏览器看到的MIME便符合要求了，但是同样的，一个png文件上传后，如果没有.htacess这类文件的帮助，其实是不能承担木马的功能的，所以还需要在BP中修改filename的后缀名为php。这里不做赘述，方法和Pass01一模一样。
+### 检测
+为了验证上传成功和木马文件内容的正确，继续访问 你的ip/upload-labs/upload/你上传的木马文件，查看到页面一面空白后说明一切正常
+![QQ20240819-012404](https://github.com/user-attachments/assets/56f9dd1c-f387-47bf-9536-45f106a8f475)
+也可以通过中国蚁剑进行连接测试，连接成功说明任务圆满完成！
 
 
