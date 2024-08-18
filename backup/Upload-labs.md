@@ -1,4 +1,4 @@
-#提要
+# 提要
 由于upload-labs下载来源不同，可能在靶场搭建时会出现无法上传的报错，可以进入源文件中查看是否有upload文件夹（跟pass01等同级），没有的话创建一个upload文件夹即可。且不同关卡需要的php版本不同，有的关卡需要老版本不带nts的php，建议靶场搭建使用老版本的phpstudy~新人小白在学习过程中也会更新这篇提要
 
 # 第一关
@@ -42,7 +42,7 @@ function checkFile() {
 ![QQ20240819-003057](https://github.com/user-attachments/assets/de799a7d-3c7e-49c1-8ce1-424c73e4f272)
 ，当然也可以通过菜刀或者中国蚁剑进行连接操作，连接成功也说明木马上传成功！
 
-#第二关
+# 第二关
 ## 源码展示
 ```php
 $is_upload = false;
