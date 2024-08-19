@@ -179,7 +179,60 @@ MIME类型由两部分组成，用斜杠/分割</p>
 <h3>检测</h3>
 <p>为了验证上传成功和木马文件内容的正确，继续访问 你的ip/upload-labs/upload/你上传的木马文件，查看到页面一面空白后说明一切正常<br>
 <a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/56f9dd1c-f387-47bf-9536-45f106a8f475"><img src="https://github.com/user-attachments/assets/56f9dd1c-f387-47bf-9536-45f106a8f475" alt="QQ20240819-012404" style="max-width: 100%;"></a><br>
-也可以通过中国蚁剑进行连接测试，连接成功说明任务圆满完成！</p></div>
+也可以通过中国蚁剑进行连接测试，连接成功说明任务圆满完成！</p>
+<h1>第三关</h1>
+<h2>注意</h2>
+<p>这一关我个人认为是用于衔接下一关（第四关）的，请注意二者相关性，下面会谈到</p>
+<h2>源码分析</h2>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span>is_upload</span> = <span class="pl-c1">false</span>;
+<span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-c1">null</span>;
+<span class="pl-k">if</span> (<span class="pl-en">isset</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_POST</span></span>[<span class="pl-s">'<span class="pl-s">submit</span>'</span>])) {
+    <span class="pl-k">if</span> (<span class="pl-en">file_exists</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span>)) {
+        <span class="pl-s1"><span class="pl-c1">$</span>deny_ext</span> = <span class="pl-en">array</span>(<span class="pl-s">'<span class="pl-s">.asp</span>'</span>,<span class="pl-s">'<span class="pl-s">.aspx</span>'</span>,<span class="pl-s">'<span class="pl-s">.php</span>'</span>,<span class="pl-s">'<span class="pl-s">.jsp</span>'</span>);
+        <span class="pl-s1"><span class="pl-c1">$</span>file_name</span> = <span class="pl-en">trim</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">name</span>'</span>]);
+        <span class="pl-s1"><span class="pl-c1">$</span>file_name</span> = <span class="pl-en">deldot</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_name</span>);<span class="pl-c">//删除文件名末尾的点</span>
+        <span class="pl-s1"><span class="pl-c1">$</span>file_ext</span> = <span class="pl-en">strrchr</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_name</span>, <span class="pl-s">'<span class="pl-s">.</span>'</span>);
+        <span class="pl-s1"><span class="pl-c1">$</span>file_ext</span> = <span class="pl-en">strtolower</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_ext</span>); <span class="pl-c">//转换为小写</span>
+        <span class="pl-s1"><span class="pl-c1">$</span>file_ext</span> = <span class="pl-en">str_ireplace</span>(<span class="pl-s">'<span class="pl-s">::$DATA</span>'</span>, <span class="pl-s">''</span>, <span class="pl-s1"><span class="pl-c1">$</span>file_ext</span>);<span class="pl-c">//去除字符串::$DATA</span>
+        <span class="pl-s1"><span class="pl-c1">$</span>file_ext</span> = <span class="pl-en">trim</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_ext</span>); <span class="pl-c">//收尾去空</span>
+
+        <span class="pl-k">if</span>(!<span class="pl-en">in_array</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_ext</span>, <span class="pl-s1"><span class="pl-c1">$</span>deny_ext</span>)) {
+            <span class="pl-k">if</span> (<span class="pl-en">move_uploaded_file</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">tmp_name</span>'</span>], <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span>. <span class="pl-s">'<span class="pl-s">/</span>'</span> . <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">name</span>'</span>])) {
+                 <span class="pl-s1"><span class="pl-c1">$</span>img_path</span> = <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span> .<span class="pl-s">'<span class="pl-s">/</span>'</span>. <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">name</span>'</span>];
+                 <span class="pl-s1"><span class="pl-c1">$</span>is_upload</span> = <span class="pl-c1">true</span>;
+            }
+        } <span class="pl-k">else</span> {
+            <span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-s">'<span class="pl-s">不允许上传.asp,.aspx,.php,.jsp后缀文件！</span>'</span>;
+        }
+    } <span class="pl-k">else</span> {
+        <span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span> . <span class="pl-s">'<span class="pl-s">文件夹不存在,请手工创建！</span>'</span>;
+    }
+}</pre></div>
+<p>分析可知，网站采用黑名单策略，并且防止了后缀名加点和空格的绕过手段（windows会将后缀名后的点和空格去掉，故也用于后缀名绕过），并且还防止了$DATA和大小写绕过，看似无懈可击。此时我们用前面打的方法进行绕过，会发现无法上传。无论如何都无法将php文件送入敌后了。<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/49eefa31-c192-4f63-8e1c-8ab424d8ebe3"><img src="https://github.com/user-attachments/assets/49eefa31-c192-4f63-8e1c-8ab424d8ebe3" alt="QQ20240819-233301" style="max-width: 100%;"></a></p>
+<h2>绕过策略</h2>
+<p>此时，黑名单相较于白名单的劣势就体现出来了。网站黑名单只拒绝了四种后缀名的文件，但是可执行文件的后缀名海了去了！如我们想要将php文件送入却无计可施，完全可以用php3,php5,phtml文件绕过黑名单策略。</p>
+<h3>注意</h3>
+<p>重点来了，这里也是我为什么说这一关更像是 下一关的衔接 ，其本身思路不具备太多可行性，下面会体现出来<br>
+为了让网站将php3,php5,phtml文件以解析php的方式解析，我们就要做如下调整：</p>
+<h4>1</h4>
+<p>在phpstudy中，将你的php的版本换成一个不带nts的ts版本<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/2c9e912d-267b-4bb8-b521-15be338dfd55"><img src="https://github.com/user-attachments/assets/2c9e912d-267b-4bb8-b521-15be338dfd55" alt="屏幕截图 2024-08-19 233803" style="max-width: 100%;"></a><br>
+nts是非多线程安全，ts是多线程安全，无需深究（因为我也不懂）。</p>
+<h4>2</h4>
+<p>在phpstudy中，找到apache的配置文件httpd.conf<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/16ae242e-09cd-4d3e-a485-68f137baa36e"><img src="https://github.com/user-attachments/assets/16ae242e-09cd-4d3e-a485-68f137baa36e" alt="屏幕截图 2024-08-19 235204" style="max-width: 100%;"></a><br>
+（phpstudy中寻找方式如图）<br>
+进入文件，搜索 AddType application/x-httpd-php .php ，会找到一行被注释的代码<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/a4520998-9342-47d9-8e9e-d692c98963a7"><img src="https://github.com/user-attachments/assets/a4520998-9342-47d9-8e9e-d692c98963a7" alt="QQ20240820-000812" style="max-width: 100%;"></a><br>
+这段代码的意思是，将.pho后缀名的文件作为php解析。所以我们将#号删掉，在代码后加上我们想用于绕过的文件的后缀名：php3,php5,phtml。其实这时候你加上jpg和png后缀然后用图片上传木马也可以了，但我们还是按照靶场的思路来。修改此行代码为：</p>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-v">AddType</span> application/x-httpd-php .php .phtml .php3 .php5</pre></div>
+<h4>不可行原因</h4>
+<p>看了以上两点我们应该会有感想：我修改配置文件是为了上传木马，可为了能上传木马我需要强大到可以修改配置文件。。。这就是这一关的不可行性了，但是这一关的思路：利用配置文件中的addtype和网站的黑名单漏洞，是具有可行性的，下一关我们将用.htaccess文件使这个想法具备可行性。</p>
+<h3>开始绕过</h3>
+<p>准备好我们的木马文件，老规矩，打开BP的拦截，上传文件，抓包，修改filename的后缀名为php3，放行，会发现文件就上传成功了。验证上传是否成功的方式和前两关一模一样，不再做赘述。</p>
+<h2>最后再次提醒，请读懂这行代码：</h2>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-v">AddType</span> application/x-httpd-php .php .phtml</pre></div></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>

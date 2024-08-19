@@ -104,4 +104,67 @@ MIME类型由两部分组成，用斜杠/分割
 ![QQ20240819-012404](https://github.com/user-attachments/assets/56f9dd1c-f387-47bf-9536-45f106a8f475)
 也可以通过中国蚁剑进行连接测试，连接成功说明任务圆满完成！
 
+# 第三关
+## 注意
+这一关我个人认为是用于衔接下一关（第四关）的，请注意二者相关性，下面会谈到
+## 源码分析
+```php
+$is_upload = false;
+$msg = null;
+if (isset($_POST['submit'])) {
+    if (file_exists($UPLOAD_ADDR)) {
+        $deny_ext = array('.asp','.aspx','.php','.jsp');
+        $file_name = trim($_FILES['upload_file']['name']);
+        $file_name = deldot($file_name);//删除文件名末尾的点
+        $file_ext = strrchr($file_name, '.');
+        $file_ext = strtolower($file_ext); //转换为小写
+        $file_ext = str_ireplace('::$DATA', '', $file_ext);//去除字符串::$DATA
+        $file_ext = trim($file_ext); //收尾去空
+
+        if(!in_array($file_ext, $deny_ext)) {
+            if (move_uploaded_file($_FILES['upload_file']['tmp_name'], $UPLOAD_ADDR. '/' . $_FILES['upload_file']['name'])) {
+                 $img_path = $UPLOAD_ADDR .'/'. $_FILES['upload_file']['name'];
+                 $is_upload = true;
+            }
+        } else {
+            $msg = '不允许上传.asp,.aspx,.php,.jsp后缀文件！';
+        }
+    } else {
+        $msg = $UPLOAD_ADDR . '文件夹不存在,请手工创建！';
+    }
+}
+
+```
+分析可知，网站采用黑名单策略，并且防止了后缀名加点和空格的绕过手段（windows会将后缀名后的点和空格去掉，故也用于后缀名绕过），并且还防止了$DATA和大小写绕过，看似无懈可击。此时我们用前面打的方法进行绕过，会发现无法上传。无论如何都无法将php文件送入敌后了。
+![QQ20240819-233301](https://github.com/user-attachments/assets/49eefa31-c192-4f63-8e1c-8ab424d8ebe3)
+
+## 绕过策略
+此时，黑名单相较于白名单的劣势就体现出来了。网站黑名单只拒绝了四种后缀名的文件，但是可执行文件的后缀名海了去了！如我们想要将php文件送入却无计可施，完全可以用php3,php5,phtml文件绕过黑名单策略。
+### 注意
+重点来了，这里也是我为什么说这一关更像是 下一关的衔接 ，其本身思路不具备太多可行性，下面会体现出来
+为了让网站将php3,php5,phtml文件以解析php的方式解析，我们就要做如下调整：
+#### 1
+在phpstudy中，将你的php的版本换成一个不带nts的ts版本
+![屏幕截图 2024-08-19 233803](https://github.com/user-attachments/assets/2c9e912d-267b-4bb8-b521-15be338dfd55)
+nts是非多线程安全，ts是多线程安全，无需深究（因为我也不懂）。
+#### 2
+在phpstudy中，找到apache的配置文件httpd.conf
+![屏幕截图 2024-08-19 235204](https://github.com/user-attachments/assets/16ae242e-09cd-4d3e-a485-68f137baa36e)
+（phpstudy中寻找方式如图）
+进入文件，搜索 AddType application/x-httpd-php .php ，会找到一行被注释的代码
+![QQ20240820-000812](https://github.com/user-attachments/assets/a4520998-9342-47d9-8e9e-d692c98963a7)
+这段代码的意思是，将.pho后缀名的文件作为php解析。所以我们将#号删掉，在代码后加上我们想用于绕过的文件的后缀名：php3,php5,phtml。其实这时候你加上jpg和png后缀然后用图片上传木马也可以了，但我们还是按照靶场的思路来。修改此行代码为：
+```php
+AddType application/x-httpd-php .php .phtml .php3 .php5
+```
+#### 不可行原因
+看了以上两点我们应该会有感想：我修改配置文件是为了上传木马，可为了能上传木马我需要强大到可以修改配置文件。。。这就是这一关的不可行性了，但是这一关的思路：利用配置文件中的addtype和网站的黑名单漏洞，是具有可行性的，下一关我们将用.htaccess文件使这个想法具备可行性。
+### 开始绕过
+准备好我们的木马文件，老规矩，打开BP的拦截，上传文件，抓包，修改filename的后缀名为php3，放行，会发现文件就上传成功了。验证上传是否成功的方式和前两关一模一样，不再做赘述。
+
+## 最后再次提醒，请读懂这行代码：
+```php
+AddType application/x-httpd-php .php .phtml
+```
+
 
