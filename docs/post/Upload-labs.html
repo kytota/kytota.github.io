@@ -88,10 +88,10 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <div class="markdown-body" id="postBody"><h1>提要</h1>
 <p>由于upload-labs下载来源不同，可能在靶场搭建时会出现无法上传的报错，可以进入源文件中查看是否有upload文件夹（跟pass01等同级），没有的话创建一个upload文件夹即可。且不同关卡需要的php版本不同，有的关卡需要老版本不带nts的php，建议靶场搭建使用老版本的phpstudy~新人小白在学习过程中也会更新这篇提要</p>
 <h1>目录</h1>
-<p>-<a href="#%E7%AC%AC%E4%B8%80%E5%85%B3">pass01</a><br>
--<a href="#%E7%AC%AC%E4%BA%8C%E5%85%B3">pass02</a><br>
--<a href="#%E7%AC%AC%E4%B8%89%E5%85%B3">pass03</a></p>
-<h1>第一关</h1>
+<p>-<a href="#pass01">pass01</a><br>
+-<a href="#pass02">pass02</a><br>
+-<a href="#pass03">pass03</a></p>
+<h1>pass01</h1>
 <h2>源码展示</h2>
 <div class="highlight highlight-text-html-basic"><pre class="notranslate">function checkFile() {
     var file = document.getElementsByName('upload_file')[0].value;
@@ -128,7 +128,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 ,为了验证，可以访问<a href="http://%E4%BD%A0%E7%9A%84ip/upload-labs/%E4%BD%A0%E7%9A%84%E6%9C%A8%E9%A9%AC%E6%96%87%E4%BB%B6%E5%90%8D%EF%BC%88%E5%9C%A8bp%E4%B8%AD%E4%BF%AE%E6%94%B9%E5%90%8E%E7%9A%84%EF%BC%89%EF%BC%8C%E7%9C%8B%E5%88%B0%E7%A9%BA%E7%99%BD%E7%9A%84%E9%A1%B5%E9%9D%A2%E4%B8%80%E8%88%AC%E5%B0%B1%E6%98%AF%E6%88%90%E5%8A%9F%E4%BA%86%EF%BC%8C%E5%A6%82%EF%BC%9A" rel="nofollow">http://你的ip/upload-labs/你的木马文件名（在bp中修改后的），看到空白的页面一般就是成功了，如：</a><br>
 <a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/de799a7d-3c7e-49c1-8ce1-424c73e4f272"><img src="https://github.com/user-attachments/assets/de799a7d-3c7e-49c1-8ce1-424c73e4f272" alt="QQ20240819-003057" style="max-width: 100%;"></a><br>
 ，当然也可以通过菜刀或者中国蚁剑进行连接操作，连接成功也说明木马上传成功！</p>
-<h1>第二关</h1>
+<h1>pass02</h1>
 <h2>源码展示</h2>
 <div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span>is_upload</span> = <span class="pl-c1">false</span>;
 <span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-c1">null</span>;
@@ -184,7 +184,7 @@ MIME类型由两部分组成，用斜杠/分割</p>
 <p>为了验证上传成功和木马文件内容的正确，继续访问 你的ip/upload-labs/upload/你上传的木马文件，查看到页面一面空白后说明一切正常<br>
 <a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/56f9dd1c-f387-47bf-9536-45f106a8f475"><img src="https://github.com/user-attachments/assets/56f9dd1c-f387-47bf-9536-45f106a8f475" alt="QQ20240819-012404" style="max-width: 100%;"></a><br>
 也可以通过中国蚁剑进行连接测试，连接成功说明任务圆满完成！</p>
-<h1>第三关</h1>
+<h1>pass03</h1>
 <h2>注意</h2>
 <p>这一关我个人认为是用于衔接下一关（第四关）的，请注意二者相关性，下面会谈到</p>
 <h2>源码分析</h2>

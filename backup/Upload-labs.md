@@ -2,12 +2,12 @@
 由于upload-labs下载来源不同，可能在靶场搭建时会出现无法上传的报错，可以进入源文件中查看是否有upload文件夹（跟pass01等同级），没有的话创建一个upload文件夹即可。且不同关卡需要的php版本不同，有的关卡需要老版本不带nts的php，建议靶场搭建使用老版本的phpstudy~新人小白在学习过程中也会更新这篇提要
 
 # 目录
--[pass01](#第一关)
--[pass02](#第二关)
--[pass03](#第三关)
+-[pass01](#pass01)
+-[pass02](#pass02)
+-[pass03](#pass03)
 
 
-# 第一关
+# pass01
 ## 源码展示
 ```html
 function checkFile() {
@@ -48,7 +48,7 @@ function checkFile() {
 ![QQ20240819-003057](https://github.com/user-attachments/assets/de799a7d-3c7e-49c1-8ce1-424c73e4f272)
 ，当然也可以通过菜刀或者中国蚁剑进行连接操作，连接成功也说明木马上传成功！
 
-# 第二关
+# pass02
 ## 源码展示
 ```php
 $is_upload = false;
@@ -110,7 +110,7 @@ MIME类型由两部分组成，用斜杠/分割
 ![QQ20240819-012404](https://github.com/user-attachments/assets/56f9dd1c-f387-47bf-9536-45f106a8f475)
 也可以通过中国蚁剑进行连接测试，连接成功说明任务圆满完成！
 
-# 第三关
+# pass03
 ## 注意
 这一关我个人认为是用于衔接下一关（第四关）的，请注意二者相关性，下面会谈到
 ## 源码分析
