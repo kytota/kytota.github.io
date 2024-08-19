@@ -1,6 +1,8 @@
 # 提要
 由于upload-labs下载来源不同，可能在靶场搭建时会出现无法上传的报错，可以进入源文件中查看是否有upload文件夹（跟pass01等同级），没有的话创建一个upload文件夹即可。且不同关卡需要的php版本不同，有的关卡需要老版本不带nts的php，建议靶场搭建使用老版本的phpstudy~新人小白在学习过程中也会更新这篇提要
 
+
+
 # 第一关
 ## 源码展示
 ```html
@@ -162,7 +164,8 @@ AddType application/x-httpd-php .php .phtml .php3 .php5
 ### 开始绕过
 准备好我们的木马文件，老规矩，打开BP的拦截，上传文件，抓包，修改filename的后缀名为php3，放行，会发现文件就上传成功了。验证上传是否成功的方式和前两关一模一样，不再做赘述。
 
-## 最后再次提醒，请读懂这行代码：
+> [!NOTE]
+> 最后再次提醒，请读懂下面这行代码：
 ```php
 AddType application/x-httpd-php .php .phtml
 ```
