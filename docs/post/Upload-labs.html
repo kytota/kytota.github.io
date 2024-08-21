@@ -149,13 +149,12 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 }</pre></div>
 <h2>分析</h2>
 <p>从代码格式就可以看出这是后端的检测了，查看代码可以知道，只放行类型为</p>
-<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == <span class="pl-s">'<span class="pl-s">image/jpeg</span>'</span>) || (<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == <span class="pl-s">'<span class="pl-s">image/png</span>'</span>) || (<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == <span class="pl-s">'<span class="pl-s">image/gif</span></span>
-<span class="pl-s"><span class="pl-s"></span>'</span>```
-的文件，那这一句话是什么意思呢？询问gpt可以得知：
-<span class="pl-c">### 1 $_FILES['upload_file']['type']</span>
-<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>]是一个<span class="pl-c1">PHP</span>超全局数组，用于处理通过<span class="pl-c1">HTTP</span> <span class="pl-c1">POST</span>方法上传的文件，假如我上传一个名为pass.php的文件夹
-```php
-<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>] = <span class="pl-en">array</span>(
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == <span class="pl-s">'<span class="pl-s">image/jpeg</span>'</span>) || (<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == <span class="pl-s">'<span class="pl-s">image/png</span>'</span>) || (<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == '<span class="pl-s">image/gif</span>
+<span class="pl-s"></span></pre></div>
+<p>的文件，那这一句话是什么意思呢？询问gpt可以得知：</p>
+<h3>1 $_FILES['upload_file']['type']</h3>
+<p>$_FILES['upload_file']['type']是一个PHP超全局数组，用于处理通过HTTP POST方法上传的文件，假如我上传一个名为pass.php的文件夹</p>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>] = <span class="pl-en">array</span>(
     <span class="pl-s">'<span class="pl-s">name</span>'</span> =&gt; <span class="pl-s">'<span class="pl-s">pass.php</span>'</span>,          <span class="pl-c">// 上传文件的原始文件名</span>
     <span class="pl-s">'<span class="pl-s">type</span>'</span> =&gt; <span class="pl-s">'<span class="pl-s">text/plain</span>'</span>,        <span class="pl-c">// 文件的 MIME 类型（取决于服务器和浏览器的判断）</span>
     <span class="pl-s">'<span class="pl-s">tmp_name</span>'</span> =&gt; <span class="pl-s">'<span class="pl-s">/tmp/phpYzdqkD</span>'</span>,<span class="pl-c">// 文件上传后的临时存储路径</span>

@@ -74,7 +74,7 @@ if (isset($_POST['submit'])) {
 从代码格式就可以看出这是后端的检测了，查看代码可以知道，只放行类型为
 ```php 
 $_FILES['upload_file']['type'] == 'image/jpeg') || ($_FILES['upload_file']['type'] == 'image/png') || ($_FILES['upload_file']['type'] == 'image/gif
-'```
+```
 的文件，那这一句话是什么意思呢？询问gpt可以得知：
 ### 1 $_FILES['upload_file']['type']
 $_FILES['upload_file']['type']是一个PHP超全局数组，用于处理通过HTTP POST方法上传的文件，假如我上传一个名为pass.php的文件夹
