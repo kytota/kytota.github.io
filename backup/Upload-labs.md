@@ -5,6 +5,7 @@
 -[pass01](#pass01)
 -[pass02](#pass02)
 -[pass03](#pass03)
+-[pass04](#pass04)
 
 
 # pass01
@@ -173,5 +174,61 @@ AddType application/x-httpd-php .php .phtml .php3 .php5
 ```php
 AddType application/x-httpd-php .php .phtml
 ```
+
+# pass04
+## 源代码展示
+```php
+$is_upload = false;
+$msg = null;
+if (isset($_POST['submit'])) {
+    if (file_exists($UPLOAD_ADDR)) {
+        $deny_ext = array(".php",".php5",".php4",".php3",".php2","php1",".html",".htm",".phtml",".pHp",".pHp5",".pHp4",".pHp3",".pHp2","pHp1",".Html",".Htm",".pHtml",".jsp",".jspa",".jspx",".jsw",".jsv",".jspf",".jtml",".jSp",".jSpx",".jSpa",".jSw",".jSv",".jSpf",".jHtml",".asp",".aspx",".asa",".asax",".ascx",".ashx",".asmx",".cer",".aSp",".aSpx",".aSa",".aSax",".aScx",".aShx",".aSmx",".cEr",".sWf",".swf");
+        $file_name = trim($_FILES['upload_file']['name']);
+        $file_name = deldot($file_name);//删除文件名末尾的点
+        $file_ext = strrchr($file_name, '.');
+        $file_ext = strtolower($file_ext); //转换为小写
+        $file_ext = str_ireplace('::$DATA', '', $file_ext);//去除字符串::$DATA
+        $file_ext = trim($file_ext); //收尾去空
+
+        if (!in_array($file_ext, $deny_ext)) {
+            if (move_uploaded_file($_FILES['upload_file']['tmp_name'], $UPLOAD_ADDR . '/' . $_FILES['upload_file']['name'])) {
+                $img_path = $UPLOAD_ADDR . $_FILES['upload_file']['name'];
+                $is_upload = true;
+            }
+        } else {
+            $msg = '此文件不允许上传!';
+        }
+    } else {
+        $msg = $UPLOAD_ADDR . '文件夹不存在,请手工创建！';
+    }
+}
+```
+
+# 代码分析
+相较于第三关，这次网站在前者的基础上把php3等文件后缀名也纳入了黑名单。
+
+# 解决方案
+第三关为了使php3,php5,phtml文件被当做php文件解析，我们进入了apache的httpd-conf进行配置文件的修改，修改了代码
+```php
+AddType application/x-httpd-php
+```
+并且在其后方加上了.php3 .php5来使这类文件作为php文件被浏览器进行解析。事实上，httpd-conf的功能可以通过.htaccess文件来实现。
+## httpd-conf和.htaceess文件的区别
+![QQ20240822-181439](https://github.com/user-attachments/assets/f24c2e86-b43d-40c1-b825-d95271243d9c)
+(apache官网截的一些讲解)
+省流来说，apache中：一、httpd-conf是全局配置文件，而.htaceess是作用于其所在目录及其子目录中的配置文件；二、httpd-conf需要管理员级别的权限才能进行修改，且修改后需要重启服务器才能生效，而.htaccess文件可以通过我们的文本编辑器进行修改，且修改后即刻生效。
+## 如何上传.htaccess文件
+首先，我们要知道，我们上传.htaccess文件是为了修改网站的配置，让我们上传除了黑名单以外的文件类型时，仍然能够作为php文件进行解析。根据第三关我们知道，这涉及到
+```php
+AddType application/x-httpd-php .php # 增加这一类型的应用解释
+```
+这一行代码，我们需要对其进行修改。但是这一配置已经在httpd-conf中，这时候我们再上传一个.htaccess对其进行修改，就涉及到对httpd-conf的override（覆盖）了，而httpd-conf中有一个变量AllowOverride，其值为None时是不允许对httpd-conf进行覆盖重写的，所以进入httpd-conf搜索AllowOverride查看其值，若是None就改为all即可。
+## 绕过展示
+### 1.写一个.htaccess文件
+![QQ20240822-193235](https://github.com/user-attachments/assets/0de71edf-07dc-4db1-8e4e-0e2a5cc5cd79)
+### 2.上传.htaccess文件
+### 3.准备好后缀名为.htaccess文件中对应后缀名的文件
+### 4.上传
+可以发现上传成功（如果失败可能是php版本号的问题，参照pass03的版本号选择）
 
 

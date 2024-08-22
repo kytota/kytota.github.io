@@ -90,7 +90,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <h1>目录</h1>
 <p>-<a href="#pass01">pass01</a><br>
 -<a href="#pass02">pass02</a><br>
--<a href="#pass03">pass03</a></p>
+-<a href="#pass03">pass03</a><br>
+-<a href="#pass04">pass04</a></p>
 <h1>pass01</h1>
 <h2>源码展示</h2>
 <div class="highlight highlight-text-html-basic"><pre class="notranslate">function checkFile() {
@@ -236,7 +237,54 @@ nts是非多线程安全，ts是多线程安全，无需深究（因为我也不
 <p>准备好我们的木马文件，老规矩，打开BP的拦截，上传文件，抓包，修改filename的后缀名为php3，放行，会发现文件就上传成功了。验证上传是否成功的方式和前两关一模一样，不再做赘述。</p>
 <div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p>最后再次提醒，请读懂下面这行代码：</p>
 </div>
-<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-v">AddType</span> application/x-httpd-php .php .phtml</pre></div></div>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-v">AddType</span> application/x-httpd-php .php .phtml</pre></div>
+<h1>pass04</h1>
+<h2>源代码展示</h2>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span>is_upload</span> = <span class="pl-c1">false</span>;
+<span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-c1">null</span>;
+<span class="pl-k">if</span> (<span class="pl-en">isset</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_POST</span></span>[<span class="pl-s">'<span class="pl-s">submit</span>'</span>])) {
+    <span class="pl-k">if</span> (<span class="pl-en">file_exists</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span>)) {
+        <span class="pl-s1"><span class="pl-c1">$</span>deny_ext</span> = <span class="pl-en">array</span>(<span class="pl-s">"<span class="pl-s">.php</span>"</span>,<span class="pl-s">"<span class="pl-s">.php5</span>"</span>,<span class="pl-s">"<span class="pl-s">.php4</span>"</span>,<span class="pl-s">"<span class="pl-s">.php3</span>"</span>,<span class="pl-s">"<span class="pl-s">.php2</span>"</span>,<span class="pl-s">"<span class="pl-s">php1</span>"</span>,<span class="pl-s">"<span class="pl-s">.html</span>"</span>,<span class="pl-s">"<span class="pl-s">.htm</span>"</span>,<span class="pl-s">"<span class="pl-s">.phtml</span>"</span>,<span class="pl-s">"<span class="pl-s">.pHp</span>"</span>,<span class="pl-s">"<span class="pl-s">.pHp5</span>"</span>,<span class="pl-s">"<span class="pl-s">.pHp4</span>"</span>,<span class="pl-s">"<span class="pl-s">.pHp3</span>"</span>,<span class="pl-s">"<span class="pl-s">.pHp2</span>"</span>,<span class="pl-s">"<span class="pl-s">pHp1</span>"</span>,<span class="pl-s">"<span class="pl-s">.Html</span>"</span>,<span class="pl-s">"<span class="pl-s">.Htm</span>"</span>,<span class="pl-s">"<span class="pl-s">.pHtml</span>"</span>,<span class="pl-s">"<span class="pl-s">.jsp</span>"</span>,<span class="pl-s">"<span class="pl-s">.jspa</span>"</span>,<span class="pl-s">"<span class="pl-s">.jspx</span>"</span>,<span class="pl-s">"<span class="pl-s">.jsw</span>"</span>,<span class="pl-s">"<span class="pl-s">.jsv</span>"</span>,<span class="pl-s">"<span class="pl-s">.jspf</span>"</span>,<span class="pl-s">"<span class="pl-s">.jtml</span>"</span>,<span class="pl-s">"<span class="pl-s">.jSp</span>"</span>,<span class="pl-s">"<span class="pl-s">.jSpx</span>"</span>,<span class="pl-s">"<span class="pl-s">.jSpa</span>"</span>,<span class="pl-s">"<span class="pl-s">.jSw</span>"</span>,<span class="pl-s">"<span class="pl-s">.jSv</span>"</span>,<span class="pl-s">"<span class="pl-s">.jSpf</span>"</span>,<span class="pl-s">"<span class="pl-s">.jHtml</span>"</span>,<span class="pl-s">"<span class="pl-s">.asp</span>"</span>,<span class="pl-s">"<span class="pl-s">.aspx</span>"</span>,<span class="pl-s">"<span class="pl-s">.asa</span>"</span>,<span class="pl-s">"<span class="pl-s">.asax</span>"</span>,<span class="pl-s">"<span class="pl-s">.ascx</span>"</span>,<span class="pl-s">"<span class="pl-s">.ashx</span>"</span>,<span class="pl-s">"<span class="pl-s">.asmx</span>"</span>,<span class="pl-s">"<span class="pl-s">.cer</span>"</span>,<span class="pl-s">"<span class="pl-s">.aSp</span>"</span>,<span class="pl-s">"<span class="pl-s">.aSpx</span>"</span>,<span class="pl-s">"<span class="pl-s">.aSa</span>"</span>,<span class="pl-s">"<span class="pl-s">.aSax</span>"</span>,<span class="pl-s">"<span class="pl-s">.aScx</span>"</span>,<span class="pl-s">"<span class="pl-s">.aShx</span>"</span>,<span class="pl-s">"<span class="pl-s">.aSmx</span>"</span>,<span class="pl-s">"<span class="pl-s">.cEr</span>"</span>,<span class="pl-s">"<span class="pl-s">.sWf</span>"</span>,<span class="pl-s">"<span class="pl-s">.swf</span>"</span>);
+        <span class="pl-s1"><span class="pl-c1">$</span>file_name</span> = <span class="pl-en">trim</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">name</span>'</span>]);
+        <span class="pl-s1"><span class="pl-c1">$</span>file_name</span> = <span class="pl-en">deldot</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_name</span>);<span class="pl-c">//删除文件名末尾的点</span>
+        <span class="pl-s1"><span class="pl-c1">$</span>file_ext</span> = <span class="pl-en">strrchr</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_name</span>, <span class="pl-s">'<span class="pl-s">.</span>'</span>);
+        <span class="pl-s1"><span class="pl-c1">$</span>file_ext</span> = <span class="pl-en">strtolower</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_ext</span>); <span class="pl-c">//转换为小写</span>
+        <span class="pl-s1"><span class="pl-c1">$</span>file_ext</span> = <span class="pl-en">str_ireplace</span>(<span class="pl-s">'<span class="pl-s">::$DATA</span>'</span>, <span class="pl-s">''</span>, <span class="pl-s1"><span class="pl-c1">$</span>file_ext</span>);<span class="pl-c">//去除字符串::$DATA</span>
+        <span class="pl-s1"><span class="pl-c1">$</span>file_ext</span> = <span class="pl-en">trim</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_ext</span>); <span class="pl-c">//收尾去空</span>
+
+        <span class="pl-k">if</span> (!<span class="pl-en">in_array</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_ext</span>, <span class="pl-s1"><span class="pl-c1">$</span>deny_ext</span>)) {
+            <span class="pl-k">if</span> (<span class="pl-en">move_uploaded_file</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">tmp_name</span>'</span>], <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span> . <span class="pl-s">'<span class="pl-s">/</span>'</span> . <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">name</span>'</span>])) {
+                <span class="pl-s1"><span class="pl-c1">$</span>img_path</span> = <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span> . <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">name</span>'</span>];
+                <span class="pl-s1"><span class="pl-c1">$</span>is_upload</span> = <span class="pl-c1">true</span>;
+            }
+        } <span class="pl-k">else</span> {
+            <span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-s">'<span class="pl-s">此文件不允许上传!</span>'</span>;
+        }
+    } <span class="pl-k">else</span> {
+        <span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span> . <span class="pl-s">'<span class="pl-s">文件夹不存在,请手工创建！</span>'</span>;
+    }
+}</pre></div>
+<h1>代码分析</h1>
+<p>相较于第三关，这次网站在前者的基础上把php3等文件后缀名也纳入了黑名单。</p>
+<h1>解决方案</h1>
+<p>第三关为了使php3,php5,phtml文件被当做php文件解析，我们进入了apache的httpd-conf进行配置文件的修改，修改了代码</p>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-v">AddType</span> application/x-httpd-php</pre></div>
+<p>并且在其后方加上了.php3 .php5来使这类文件作为php文件被浏览器进行解析。事实上，httpd-conf的功能可以通过.htaccess文件来实现。</p>
+<h2>httpd-conf和.htaceess文件的区别</h2>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/f24c2e86-b43d-40c1-b825-d95271243d9c"><img src="https://github.com/user-attachments/assets/f24c2e86-b43d-40c1-b825-d95271243d9c" alt="QQ20240822-181439" style="max-width: 100%;"></a><br>
+(apache官网截的一些讲解)<br>
+省流来说，apache中：一、httpd-conf是全局配置文件，而.htaceess是作用于其所在目录及其子目录中的配置文件；二、httpd-conf需要管理员级别的权限才能进行修改，且修改后需要重启服务器才能生效，而.htaccess文件可以通过我们的文本编辑器进行修改，且修改后即刻生效。</p>
+<h2>如何上传.htaccess文件</h2>
+<p>首先，我们要知道，我们上传.htaccess文件是为了修改网站的配置，让我们上传除了黑名单以外的文件类型时，仍然能够作为php文件进行解析。根据第三关我们知道，这涉及到</p>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-v">AddType</span> application/x-httpd-php .php <span class="pl-c"># 增加这一类型的应用解释</span></pre></div>
+<p>这一行代码，我们需要对其进行修改。但是这一配置已经在httpd-conf中，这时候我们再上传一个.htaccess对其进行修改，就涉及到对httpd-conf的override（覆盖）了，而httpd-conf中有一个变量AllowOverride，其值为None时是不允许对httpd-conf进行覆盖重写的，所以进入httpd-conf搜索AllowOverride查看其值，若是None就改为all即可。</p>
+<h2>绕过展示</h2>
+<h3>1.写一个.htaccess文件</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/0de71edf-07dc-4db1-8e4e-0e2a5cc5cd79"><img src="https://github.com/user-attachments/assets/0de71edf-07dc-4db1-8e4e-0e2a5cc5cd79" alt="QQ20240822-193235" style="max-width: 100%;"></a></p>
+<h3>2.上传.htaccess文件</h3>
+<h3>3.准备好后缀名为.htaccess文件中对应后缀名的文件</h3>
+<h3>4.上传</h3>
+<p>可以发现上传成功（如果失败可能是php版本号的问题，参照pass03的版本号选择）</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
@@ -298,7 +346,7 @@ document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
 cmButton=document.getElementById("cmButton");
     span=document.createElement("span");
     span.setAttribute("class","Counter");
-    span.innerHTML="3";
+    span.innerHTML="4";
     cmButton.appendChild(span);
 
 
