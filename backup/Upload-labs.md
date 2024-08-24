@@ -8,6 +8,7 @@
 -[pass04](#pass04)
 -[pass05pre](#pass05pre)
 -[pass05](#pass05)
+-[pass06](#pass06)
 
 
 # pass01
@@ -319,5 +320,47 @@ Auto_prepend_file=pass.jpg #这里我所用的木马名是pass.jpg
 用中国蚁剑进行连接，发现成功。
 ![QQ20240824-225216](https://github.com/user-attachments/assets/89b34bd2-4327-4321-9eb2-923d267ab60e)
 
+
+
+# pass06
+## 源代码展示
+```php
+$is_upload = false;
+$msg = null;
+if (isset($_POST['submit'])) {
+    if (file_exists($UPLOAD_ADDR)) {
+        $deny_ext = array(".php",".php5",".php4",".php3",".php2",".html",".htm",".phtml",".pHp",".pHp5",".pHp4",".pHp3",".pHp2",".Html",".Htm",".pHtml",".jsp",".jspa",".jspx",".jsw",".jsv",".jspf",".jtml",".jSp",".jSpx",".jSpa",".jSw",".jSv",".jSpf",".jHtml",".asp",".aspx",".asa",".asax",".ascx",".ashx",".asmx",".cer",".aSp",".aSpx",".aSa",".aSax",".aScx",".aShx",".aSmx",".cEr",".sWf",".swf",".htaccess");
+        $file_name = trim($_FILES['upload_file']['name']);
+        $file_name = deldot($file_name);//删除文件名末尾的点
+        $file_ext = strrchr($file_name, '.');
+        $file_ext = str_ireplace('::$DATA', '', $file_ext);//去除字符串::$DATA
+        $file_ext = trim($file_ext); //首尾去空
+
+        if (!in_array($file_ext, $deny_ext)) {
+            if (move_uploaded_file($_FILES['upload_file']['tmp_name'], $UPLOAD_ADDR . '/' . $_FILES['upload_file']['name'])) {
+                $img_path = $UPLOAD_ADDR . '/' . $file_name;
+                $is_upload = true;
+            }
+        } else {
+            $msg = '此文件不允许上传';
+        }
+    } else {
+        $msg = $UPLOAD_ADDR . '文件夹不存在,请手工创建！';
+    }
+}
+```
+## 代码分析
+我们可以发现一个致命且显眼的漏洞：没有预防大小写，因此本关难度极低
+
+## 绕过策略
+对此我们可以用后缀名大小写混写绕过
+，太简单，直接贴图~
+![QQ20240824-232005](https://github.com/user-attachments/assets/88e155ec-23e1-4e9c-8937-8d0c67efe8dd)
+我们先开启BP进行抓包，再上传一个名为ip.php的文件，拦截到请求包后对后缀名进行修改，改为ip.pHP,发现上传成功
+
+## 检验
+通过中国蚁剑进行连接
+![QQ20240824-232830](https://github.com/user-attachments/assets/22d915d8-3346-4396-8bf2-85d246f72088)
+成功！
 
 
