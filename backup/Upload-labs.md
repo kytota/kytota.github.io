@@ -7,6 +7,7 @@
 -[pass03](#pass03)
 -[pass04](#pass04)
 -[pass05pre](#pass05pre)
+-[pass05](#pass05)
 
 
 # pass01
@@ -260,5 +261,63 @@ phpinfo();
 为了使用.user.ini，我们需要server.api值为CGI/FastCGI，从上图可以看成新版本的才符合要求。(server.api可以理解为组件之间的协议，此处无需深究，我也不懂)
 
 ### 二、所上传的文件目录中需要有可解析的php文件
+
+
+# pass05
+## 源代码展示
+```php
+$is_upload = false;
+$msg = null;
+if (isset($_POST['submit'])) {
+    if (file_exists($UPLOAD_ADDR)) {
+        $deny_ext = array(".php",".php5",".php4",".php3",".php2",".html",".htm",".phtml",".pHp",".pHp5",".pHp4",".pHp3",".pHp2",".Html",".Htm",".pHtml",".jsp",".jspa",".jspx",".jsw",".jsv",".jspf",".jtml",".jSp",".jSpx",".jSpa",".jSw",".jSv",".jSpf",".jHtml",".asp",".aspx",".asa",".asax",".ascx",".ashx",".asmx",".cer",".aSp",".aSpx",".aSa",".aSax",".aScx",".aShx",".aSmx",".cEr",".sWf",".swf",".htaccess");
+        $file_name = trim($_FILES['upload_file']['name']);
+        $file_name = deldot($file_name);//删除文件名末尾的点
+        $file_ext = strrchr($file_name, '.');
+        $file_ext = str_ireplace('::$DATA', '', $file_ext);//去除字符串::$DATA
+        $file_ext = trim($file_ext); //首尾去空
+
+        if (!in_array($file_ext, $deny_ext)) {
+            if (move_uploaded_file($_FILES['upload_file']['tmp_name'], $UPLOAD_ADDR . '/' . $_FILES['upload_file']['name'])) {
+                $img_path = $UPLOAD_ADDR . '/' . $file_name;
+                $is_upload = true;
+            }
+        } else {
+            $msg = '此文件不允许上传';
+        }
+    } else {
+        $msg = $UPLOAD_ADDR . '文件夹不存在,请手工创建！';
+    }
+}
+```
+
+## 分析绕过策略
+注意到，本次网站禁止了.htaccess文件的上传。基于pass04pre的讲解，我们可以使用.user.ini进行绕过
+### .user.ini写法
+```php
+Auto_prepend_file=xxx.xxx #使所有当前目录及其子目录中的php文件优先包含xxx.xxx这个文件（即将xxx.xxx文件加入每个在目录范围内的php文件，跟着php文件一同被以php的方式解析）
+```
+
+## 绕过策略
+首先，检查我们的靶场文件的upload文件夹中是否已经有readme.php文件，这本应该是靶场内置的，但是由于我们获取靶场的方式各有不同，所以可能有人没有这个php文件（比如我就压根没有upload这个上传文件夹，upload文件夹都是我自己创建的，更别指望里面会有自带的readme.php了），没有这个文件的话我们创建一个空readme.php文件即可（当然不一定非得名字叫readme，举一反三嘛），因为正如pass05pre中所说，.user,ini文件要生效的话，其所在目录必须包含php文件。
+![QQ20240824-224350](https://github.com/user-attachments/assets/dcddda10-d53f-4a92-b46a-863dfbcf4f5d)
+确保uoload路径下有可用的php文件后，我们开始编写.user.ini
+### .user.ini从创建到使用
+#### 写法
+```php
+Auto_prepend_file=pass.jpg #这里我所用的木马名是pass.jpg
+```
+写好后上传，由于黑名单中未包含.user,ini，所以很顺利的，上传成功。
+（上传成功）
+
+#### 运用
+由于我的.user.ini中用于被包含的木马文件名为pass.jpg，所以我们将我们的木马文件复制一份并将文件名改为pass.jpg，随后上传。
+
+这时候，我们用浏览器解析readme.php文件时，其会将木马文件pass.jpg一并解析。
+
+## 检验
+用中国蚁剑进行连接，发现成功。
+![QQ20240824-225216](https://github.com/user-attachments/assets/89b34bd2-4327-4321-9eb2-923d267ab60e)
+
 
 
