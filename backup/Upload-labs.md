@@ -232,3 +232,32 @@ AddType application/x-httpd-php .php # 增加这一类型的应用解释
 可以发现上传成功（如果失败可能是php版本号的问题，参照pass03的版本号选择）
 
 
+
+# pass05-pre
+## 概念引入
+在pass03和pass04，我们了解了.htaccess分布式配置文件和httpd-conf全局配置文件。但有时候网站也会禁止.htaccess文件的上传，使我们无法修改和覆写httpd-conf中的配置。这时候user.ini文件就派上用场了。
+## .user.ini文件
+打开phpstudy的配置文件，我们可以看到php.ini，这是php的主配置文件。而就像.htaccess之于httpd-conf，.user.ini和php.ini文件之前的关系就是分布式与全局的关系。
+
+## .user.ini文件生效前提
+### 一、php版本
+(在.user.ini文件的上传与使用中，我们应该尽量用新版本的php进行网站配置)
+在你的phpstudy的WWW文件夹根目录下写一个php文件
+```php
+<?php
+phpinfo();
+?>
+```
+![QQ20240824-180145](https://github.com/user-attachments/assets/798b0135-209f-4271-b733-a04404805596)
+
+经过前面几关的学习，我们可以知道这个文件是为了显示php的版本及各种信息。之后在浏览器访问localhost/该文件名。
+#### 老版本php(php 5.2.17)
+![QQ20240824-180523](https://github.com/user-attachments/assets/312be315-e56b-46c0-a98b-55949a89b601)
+#### 新版本php(php7.0.12)
+![QQ20240824-180619](https://github.com/user-attachments/assets/56a692c6-cb39-49b8-b510-5541fddf8c0a)
+
+为了使用.user.ini，我们需要server.api值为CGI/FastCGI，从上图可以看成新版本的才符合要求。(server.api可以理解为组件之间的协议，此处无需深究，我也不懂)
+
+### 二、所上传的文件目录中需要有可解析的php文件
+
+
