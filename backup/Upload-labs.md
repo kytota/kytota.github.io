@@ -2,13 +2,14 @@
 由于upload-labs下载来源不同，可能在靶场搭建时会出现无法上传的报错，可以进入源文件中查看是否有upload文件夹（跟pass01等同级），没有的话创建一个upload文件夹即可。且不同关卡需要的php版本不同，有的关卡需要老版本不带nts的php，建议靶场搭建使用老版本的phpstudy~新人小白在学习过程中也会更新这篇提要
 
 # 目录
--[pass01](#pass01)
--[pass02](#pass02)
--[pass03](#pass03)
--[pass04](#pass04)
+-[pass01(前端绕过)](#pass01)
+-[pass02(MIME绕过)](#pass02)
+-[pass03(httpd-conf配置文件和php3)](#pass03)
+-[pass04(.htaccess文件)](#pass04)
 -[pass05pre](#pass05pre)
--[pass05](#pass05)
--[pass06](#pass06)
+-[pass05(.user.ini与php.ini)](#pass05)
+-[pass06(大小写绕过)](#pass06)
+-[pass07(空格绕过)](#pass07)
 
 
 # pass01
@@ -362,5 +363,58 @@ if (isset($_POST['submit'])) {
 通过中国蚁剑进行连接
 ![QQ20240824-232830](https://github.com/user-attachments/assets/22d915d8-3346-4396-8bf2-85d246f72088)
 成功！
+
+
+
+# pass07
+## 源代码展示
+```php
+$is_upload = false;
+$msg = null;
+if (isset($_POST['submit'])) {
+    if (file_exists($UPLOAD_ADDR)) {
+        $deny_ext = array(".php",".php5",".php4",".php3",".php2",".html",".htm",".phtml",".pHp",".pHp5",".pHp4",".pHp3",".pHp2",".Html",".Htm",".pHtml",".jsp",".jspa",".jspx",".jsw",".jsv",".jspf",".jtml",".jSp",".jSpx",".jSpa",".jSw",".jSv",".jSpf",".jHtml",".asp",".aspx",".asa",".asax",".ascx",".ashx",".asmx",".cer",".aSp",".aSpx",".aSa",".aSax",".aScx",".aShx",".aSmx",".cEr",".sWf",".swf",".htaccess");
+        $file_name = trim($_FILES['upload_file']['name']);
+        $file_name = deldot($file_name);//删除文件名末尾的点
+        $file_ext = strrchr($file_name, '.');
+        $file_ext = strtolower($file_ext); //转换为小写
+        $file_ext = str_ireplace('::$DATA', '', $file_ext);//去除字符串::$DATA
+        
+        if (!in_array($file_ext, $deny_ext)) {
+            if (move_uploaded_file($_FILES['upload_file']['tmp_name'], $UPLOAD_ADDR . '/' . $_FILES['upload_file']['name'])) {
+                $img_path = $UPLOAD_ADDR . '/' . $file_name;
+                $is_upload = true;
+            }
+        } else {
+            $msg = '此文件不允许上传';
+        }
+    } else {
+        $msg = $UPLOAD_ADDR . '文件夹不存在,请手工创建！';
+    }
+}
+```
+
+## 绕过策略分析
+通过网站源码我们可以看到网站的巨大漏洞：没有防止空格绕过！所以同样本关非常简单，在要上传的木马文件名后缀加上空格即可。
+
+## 绕过策略
+### 1.打开BP拦截
+![QQ20240825-095458](https://github.com/user-attachments/assets/10d7a901-b059-446b-bc0b-140ddfbfe88d)
+### 2.上传我们的木马文件
+### 3.进入BP中，修改拦截到的请求包，在filename的后缀名后加上空格。
+![QQ20240825-095604](https://github.com/user-attachments/assets/52c40b4a-21b7-4058-9509-d867751068fd)
+可以看到上传成功。
+
+## 检验
+打开我们的网站upload-labs文件的upload文件夹，可以看到上传成功。
+![QQ20240825-095928](https://github.com/user-attachments/assets/1258744d-5be1-43a1-ad34-b0d2f1f39c2e)
+
+右键查看文件属性，可以看到我们虽然在后缀名最后加了空格，但是windows操作系统依然将其视为php文件。
+![QQ20240825-095941](https://github.com/user-attachments/assets/014f8324-94cc-4efc-b563-d4623bffa7d1)
+
+最后通过中国蚁剑进行连接。
+![QQ20240825-100353](https://github.com/user-attachments/assets/775c8bd3-4a0d-4fa3-b280-b440f865fb57)
+成功！
+
 
 
