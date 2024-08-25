@@ -11,6 +11,7 @@
 -[pass06(大小写绕过)](#pass06)
 -[pass07(空格绕过)](#pass07)
 -[pass08(点绕过)](#pass08)
+-[pass09pre(额外数据流ADS)](#pass09pre)
 
 
 # pass01
@@ -503,5 +504,45 @@ if (isset($_POST['submit'])) {
 然后，去除空格——>ip.php;(此时后缀名为php+点)
 这时候后缀名能去除点和空格的操作就结束了。
 这时候上传一个后缀名为php,的文件，而经过上文我们知道windows会无视后缀名中的.，所以php.文件实际上就是php文件，我们的木马上传就成功了。
+
+
+
+# pass09pre
+## 新概念引入
+普通情况下，一个文件只有一个数据流（Data Stream），我们是通过文件名来访问它的，它就是我们双击文件查看到的内容；
+但在NTFS文件系统中（一般本地磁盘的 文件系统 就是NTFS，可以在资源管理器中右键磁盘查看），一个文件支持“寄生”额外的数据流（Alternate Data Stream），一般在这个数据流中存放文件的元数据、备份信息、标签等其他数据。正常情况下，即使一个文件被寄生了ADS，普通人也无法访问ADS；需要特定的命令行接口或者编程接口，如：CMD，以及C语言的编译器等；
+
+## ADS示范
+### ADS的写入
+我们先创建一个txt文件作为实验对象，内容是“web安全”
+![QQ20240825-220056](https://github.com/user-attachments/assets/b53a309c-0245-4c08-a0d5-7f831508c16d)
+
+ADS写入有两种方法：
+1、将特定内容写入某文件
+```cmd
+echo "要输入的内容" >> 目标文件:ADS名字
+```
+我们在存放实验对象1.txt的文件目录下打开cmd，输入上方命令
+![QQ20240825-221905](https://github.com/user-attachments/assets/3ff1245b-61c1-4f34-bbce-1dd0d88c9c31)
+写入成功，将一行内容“我在学习”输入给了1.txt中我们自定义的ADS，该ADS名字叫word
+2、将特定文件写入ADS
+```cmd
+type 用于加入ADS的文件名 >> 目标文件名:ADS名
+```
+依旧以1.txt作为实验对象，我们再创建一个2.txt文件用以写入ADS吧：
+![QQ20240825-222218](https://github.com/user-attachments/assets/fc7420e0-8cb7-427a-ad25-1396c6939f8b)
+2.txt文件内容是“我在学习”，我们将其写入1.txt的另一个自定义ADS
+![QQ20240825-222339](https://github.com/user-attachments/assets/0c7ee38f-986b-4b1d-822c-9057baaac618)
+
+### ADS的访问
+在我们进行了写入ADS后。直接双击打开或者在cmd中访问目标文件，都不会显示ADS，我们需要在cmd中访问目标文件的目标ADS；
+访问的话用一个命令就行了：
+用于打开文件的程序（确认添加到了环境变量中，不然默认notepad吧）文件名；例如
+```cmd
+notepad 1.txt:word
+notepad 1.txt:document
+```
+![QQ20240825-222928](https://github.com/user-attachments/assets/b0c17b8c-b6ff-46f3-bce1-e611416de1a2)
+
 
 
