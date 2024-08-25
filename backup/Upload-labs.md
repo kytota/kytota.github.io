@@ -10,6 +10,7 @@
 -[pass05(.user.ini与php.ini)](#pass05)
 -[pass06(大小写绕过)](#pass06)
 -[pass07(空格绕过)](#pass07)
+-[pass08(点绕过)](#pass08)
 
 
 # pass01
@@ -52,6 +53,9 @@ function checkFile() {
 ,为了验证，可以访问http://你的ip/upload-labs/你的木马文件名（在bp中修改后的），看到空白的页面一般就是成功了，如：
 ![QQ20240819-003057](https://github.com/user-attachments/assets/de799a7d-3c7e-49c1-8ce1-424c73e4f272)
 ，当然也可以通过菜刀或者中国蚁剑进行连接操作，连接成功也说明木马上传成功！
+
+
+
 
 # pass02
 ## 源码展示
@@ -114,6 +118,9 @@ MIME类型由两部分组成，用斜杠/分割
 为了验证上传成功和木马文件内容的正确，继续访问 你的ip/upload-labs/upload/你上传的木马文件，查看到页面一面空白后说明一切正常
 ![QQ20240819-012404](https://github.com/user-attachments/assets/56f9dd1c-f387-47bf-9536-45f106a8f475)
 也可以通过中国蚁剑进行连接测试，连接成功说明任务圆满完成！
+
+
+
 
 # pass03
 ## 注意
@@ -178,6 +185,7 @@ AddType application/x-httpd-php .php .phtml .php3 .php5
 ```php
 AddType application/x-httpd-php .php .phtml
 ```
+
 
 # pass04
 ## 源代码展示
@@ -416,5 +424,83 @@ if (isset($_POST['submit'])) {
 ![QQ20240825-100353](https://github.com/user-attachments/assets/775c8bd3-4a0d-4fa3-b280-b440f865fb57)
 成功！
 
+
+
+
+# pass08
+## 源代码展示
+```php
+$is_upload = false;
+$msg = null;
+if (isset($_POST['submit'])) {
+    if (file_exists($UPLOAD_ADDR)) {
+        $deny_ext = array(".php",".php5",".php4",".php3",".php2",".html",".htm",".phtml",".pHp",".pHp5",".pHp4",".pHp3",".pHp2",".Html",".Htm",".pHtml",".jsp",".jspa",".jspx",".jsw",".jsv",".jspf",".jtml",".jSp",".jSpx",".jSpa",".jSw",".jSv",".jSpf",".jHtml",".asp",".aspx",".asa",".asax",".ascx",".ashx",".asmx",".cer",".aSp",".aSpx",".aSa",".aSax",".aScx",".aShx",".aSmx",".cEr",".sWf",".swf",".htaccess");
+        $file_name = trim($_FILES['upload_file']['name']);
+        $file_name = deldot($file_name);//删除文件名末尾的点
+        $file_ext = strrchr($file_name, '.');
+        $file_ext = strtolower($file_ext); //转换为小写
+        $file_ext = trim($file_ext); //首尾去空
+        
+        if (!in_array($file_ext, $deny_ext)) {
+            if (move_uploaded_file($_FILES['upload_file']['tmp_name'], $UPLOAD_ADDR . '/' . $_FILES['upload_file']['name'])) {
+                $img_path = $UPLOAD_ADDR . '/' . $file_name;
+                $is_upload = true;
+            }
+        } else {
+            $msg = '此文件不允许上传';
+        }
+    } else {
+        $msg = $UPLOAD_ADDR . '文件夹不存在,请手工创建！';
+    }
+}
+```
+
+## 绕过策略分析
+同样的，这个网站源码有一个致命漏洞，没有对后缀名中的“.”进行删除，而windows操作系统会自动无视后缀名中的“.”，所以我们可以通过这个漏网之鱼进行文件上传。
+
+## 绕过策略
+老规矩，打开BP拦截；
+进行我们文件的上传。
+进入BP中修改请求包中filename的后缀名。
+![QQ20240825-103010](https://github.com/user-attachments/assets/13793013-0bf7-4d72-b104-de0c22342d34)
+上传成功了！
+
+检验步骤同Pass07一样，此处不做赘述。
+
+## 另辟蹊径
+其实对于该网站的绕过策略，不论他是否有去除点，去除空格和防止大小写等，我们都可以通过一个固定的方法进行绕过。
+观察网站给出的代码，这里展示的是完整地一套去除空格、点，防止大小写的pass05的代码：
+```php
+$is_upload = false;
+$msg = null;
+if (isset($_POST['submit'])) {
+    if (file_exists($UPLOAD_ADDR)) {
+        $deny_ext = array(".php",".php5",".php4",".php3",".php2",".html",".htm",".phtml",".pHp",".pHp5",".pHp4",".pHp3",".pHp2",".Html",".Htm",".pHtml",".jsp",".jspa",".jspx",".jsw",".jsv",".jspf",".jtml",".jSp",".jSpx",".jSpa",".jSw",".jSv",".jSpf",".jHtml",".asp",".aspx",".asa",".asax",".ascx",".ashx",".asmx",".cer",".aSp",".aSpx",".aSa",".aSax",".aScx",".aShx",".aSmx",".cEr",".sWf",".swf",".htaccess");
+        $file_name = trim($_FILES['upload_file']['name']);
+        $file_name = deldot($file_name);//删除文件名末尾的点
+        $file_ext = strrchr($file_name, '.');
+        $file_ext = strtolower($file_ext); //转换为小写
+        $file_ext = trim($file_ext); //首尾去空
+        
+        if (!in_array($file_ext, $deny_ext)) {
+            if (move_uploaded_file($_FILES['upload_file']['tmp_name'], $UPLOAD_ADDR . '/' . $_FILES['upload_file']['name'])) {
+                $img_path = $UPLOAD_ADDR . '/' . $file_name;
+                $is_upload = true;
+            }
+        } else {
+            $msg = '此文件不允许上传';
+        }
+    } else {
+        $msg = $UPLOAD_ADDR . '文件夹不存在,请手工创建！';
+    }
+}
+```
+观察发现，这里对后缀名的处理经过一轮就结束了，没有for循环。
+对此我们完全可以在后缀名后加上“. .”（点+空格+点）进行绕过。
+比如我们上传一个"ip.php. ."的木马文件:
+首先，去除点——>ip.php. ;(此时后缀名为php+点+空格)
+然后，去除空格——>ip.php;(此时后缀名为php+点)
+这时候后缀名能去除点和空格的操作就结束了。
+这时候上传一个后缀名为php,的文件，而经过上文我们知道windows会无视后缀名中的.，所以php.文件实际上就是php文件，我们的木马上传就成功了。
 
 
