@@ -97,7 +97,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 -<a href="#pass06">pass06(大小写绕过)</a><br>
 -<a href="#pass07">pass07(空格绕过)</a><br>
 -<a href="#pass08">pass08(点绕过)</a><br>
--<a href="#pass09pre">pass09pre(额外数据流ADS)</a></p>
+-<a href="#pass09pre">pass09pre(额外数据流ADS)</a><br>
+-<a href="#pass09">pass09(::$DATA数据流绕过)</a></p>
 <h1>pass01</h1>
 <h2>源码展示</h2>
 <div class="highlight highlight-text-html-basic"><pre class="notranslate">function checkFile() {
@@ -527,7 +528,45 @@ nts是非多线程安全，ts是多线程安全，无需深究（因为我也不
 用于打开文件的程序（确认添加到了环境变量中，不然默认notepad吧）文件名；例如</p>
 <div class="highlight highlight-source-batchfile"><pre class="notranslate">notepad 1.txt:word
 notepad 1.txt:document</pre></div>
-<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/b0c17b8c-b6ff-46f3-bce1-e611416de1a2"><img src="https://github.com/user-attachments/assets/b0c17b8c-b6ff-46f3-bce1-e611416de1a2" alt="QQ20240825-222928" style="max-width: 100%;"></a></p></div>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/b0c17b8c-b6ff-46f3-bce1-e611416de1a2"><img src="https://github.com/user-attachments/assets/b0c17b8c-b6ff-46f3-bce1-e611416de1a2" alt="QQ20240825-222928" style="max-width: 100%;"></a></p>
+<h1>pass09</h1>
+<h2>源代码展示</h2>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span>is_upload</span> = <span class="pl-c1">false</span>;
+<span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-c1">null</span>;
+<span class="pl-k">if</span> (<span class="pl-en">isset</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_POST</span></span>[<span class="pl-s">'<span class="pl-s">submit</span>'</span>])) {
+    <span class="pl-k">if</span> (<span class="pl-en">file_exists</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span>)) {
+        <span class="pl-s1"><span class="pl-c1">$</span>deny_ext</span> = <span class="pl-en">array</span>(<span class="pl-s">"<span class="pl-s">.php</span>"</span>,<span class="pl-s">"<span class="pl-s">.php5</span>"</span>,<span class="pl-s">"<span class="pl-s">.php4</span>"</span>,<span class="pl-s">"<span class="pl-s">.php3</span>"</span>,<span class="pl-s">"<span class="pl-s">.php2</span>"</span>,<span class="pl-s">"<span class="pl-s">.html</span>"</span>,<span class="pl-s">"<span class="pl-s">.htm</span>"</span>,<span class="pl-s">"<span class="pl-s">.phtml</span>"</span>,<span class="pl-s">"<span class="pl-s">.pHp</span>"</span>,<span class="pl-s">"<span class="pl-s">.pHp5</span>"</span>,<span class="pl-s">"<span class="pl-s">.pHp4</span>"</span>,<span class="pl-s">"<span class="pl-s">.pHp3</span>"</span>,<span class="pl-s">"<span class="pl-s">.pHp2</span>"</span>,<span class="pl-s">"<span class="pl-s">.Html</span>"</span>,<span class="pl-s">"<span class="pl-s">.Htm</span>"</span>,<span class="pl-s">"<span class="pl-s">.pHtml</span>"</span>,<span class="pl-s">"<span class="pl-s">.jsp</span>"</span>,<span class="pl-s">"<span class="pl-s">.jspa</span>"</span>,<span class="pl-s">"<span class="pl-s">.jspx</span>"</span>,<span class="pl-s">"<span class="pl-s">.jsw</span>"</span>,<span class="pl-s">"<span class="pl-s">.jsv</span>"</span>,<span class="pl-s">"<span class="pl-s">.jspf</span>"</span>,<span class="pl-s">"<span class="pl-s">.jtml</span>"</span>,<span class="pl-s">"<span class="pl-s">.jSp</span>"</span>,<span class="pl-s">"<span class="pl-s">.jSpx</span>"</span>,<span class="pl-s">"<span class="pl-s">.jSpa</span>"</span>,<span class="pl-s">"<span class="pl-s">.jSw</span>"</span>,<span class="pl-s">"<span class="pl-s">.jSv</span>"</span>,<span class="pl-s">"<span class="pl-s">.jSpf</span>"</span>,<span class="pl-s">"<span class="pl-s">.jHtml</span>"</span>,<span class="pl-s">"<span class="pl-s">.asp</span>"</span>,<span class="pl-s">"<span class="pl-s">.aspx</span>"</span>,<span class="pl-s">"<span class="pl-s">.asa</span>"</span>,<span class="pl-s">"<span class="pl-s">.asax</span>"</span>,<span class="pl-s">"<span class="pl-s">.ascx</span>"</span>,<span class="pl-s">"<span class="pl-s">.ashx</span>"</span>,<span class="pl-s">"<span class="pl-s">.asmx</span>"</span>,<span class="pl-s">"<span class="pl-s">.cer</span>"</span>,<span class="pl-s">"<span class="pl-s">.aSp</span>"</span>,<span class="pl-s">"<span class="pl-s">.aSpx</span>"</span>,<span class="pl-s">"<span class="pl-s">.aSa</span>"</span>,<span class="pl-s">"<span class="pl-s">.aSax</span>"</span>,<span class="pl-s">"<span class="pl-s">.aScx</span>"</span>,<span class="pl-s">"<span class="pl-s">.aShx</span>"</span>,<span class="pl-s">"<span class="pl-s">.aSmx</span>"</span>,<span class="pl-s">"<span class="pl-s">.cEr</span>"</span>,<span class="pl-s">"<span class="pl-s">.sWf</span>"</span>,<span class="pl-s">"<span class="pl-s">.swf</span>"</span>,<span class="pl-s">"<span class="pl-s">.htaccess</span>"</span>);
+        <span class="pl-s1"><span class="pl-c1">$</span>file_name</span> = <span class="pl-en">trim</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">name</span>'</span>]);
+        <span class="pl-s1"><span class="pl-c1">$</span>file_name</span> = <span class="pl-en">deldot</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_name</span>);<span class="pl-c">//删除文件名末尾的点</span>
+        <span class="pl-s1"><span class="pl-c1">$</span>file_ext</span> = <span class="pl-en">strrchr</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_name</span>, <span class="pl-s">'<span class="pl-s">.</span>'</span>);
+        <span class="pl-s1"><span class="pl-c1">$</span>file_ext</span> = <span class="pl-en">strtolower</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_ext</span>); <span class="pl-c">//转换为小写</span>
+        <span class="pl-s1"><span class="pl-c1">$</span>file_ext</span> = <span class="pl-en">trim</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_ext</span>); <span class="pl-c">//首尾去空</span>
+        
+        <span class="pl-k">if</span> (!<span class="pl-en">in_array</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_ext</span>, <span class="pl-s1"><span class="pl-c1">$</span>deny_ext</span>)) {
+            <span class="pl-k">if</span> (<span class="pl-en">move_uploaded_file</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">tmp_name</span>'</span>], <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span> . <span class="pl-s">'<span class="pl-s">/</span>'</span> . <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">name</span>'</span>])) {
+                <span class="pl-s1"><span class="pl-c1">$</span>img_path</span> = <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span> . <span class="pl-s">'<span class="pl-s">/</span>'</span> . <span class="pl-s1"><span class="pl-c1">$</span>file_name</span>;
+                <span class="pl-s1"><span class="pl-c1">$</span>is_upload</span> = <span class="pl-c1">true</span>;
+            }
+        } <span class="pl-k">else</span> {
+            <span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-s">'<span class="pl-s">此文件不允许上传</span>'</span>;
+        }
+    } <span class="pl-k">else</span> {
+        <span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span> . <span class="pl-s">'<span class="pl-s">文件夹不存在,请手工创建！</span>'</span>;
+    }
+}</pre></div>
+<h2>绕过策略分析</h2>
+<p>可以看出此次网站并没有对文件后缀名进行去除‘::$DATA’字符串的操作；<br>
+而在pass09pre中可以知道在加上::$DATA后，网站会认为这是一个数据流而不去检查文件的后缀名；因此我们可以顺利将文件送入后门，随后由于windows不允许后缀名有特殊字符":",所以在送入后门后后缀名会自动去掉‘::$DATA’而还原回原文件；</p>
+<h2>绕过策略</h2>
+<p>老规矩，先打开BP拦截；<br>
+上传木马；<br>
+进入BP抓包后修改filename的文件后缀名，加上::$DATA<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/f4ac040e-765b-4719-acae-d5fd9ee5d96a"><img src="https://github.com/user-attachments/assets/f4ac040e-765b-4719-acae-d5fd9ee5d96a" alt="QQ20240826-211038" style="max-width: 100%;"></a><br>
+可以看到shan上传成功了，我们再进入网站文件上传目录看一看：<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/839cf8be-c360-4899-bd32-1be38283f556"><img src="https://github.com/user-attachments/assets/839cf8be-c360-4899-bd32-1be38283f556" alt="QQ20240826-211208" style="max-width: 100%;"></a><br>
+可以看到，::$DATA被自动过滤掉了，也就是说在windows帮助下，木马被成功还原了~<br>
+注意：这是我们想要访问木马url时，文件名不要加上::$DATA哦，因为windows把这个字符串去掉了。<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/dec0c1cb-b8ea-49b7-b6f0-02ce38d83034"><img src="https://github.com/user-attachments/assets/dec0c1cb-b8ea-49b7-b6f0-02ce38d83034" alt="QQ20240826-211512" style="max-width: 100%;"></a></p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
@@ -589,7 +628,7 @@ document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
 cmButton=document.getElementById("cmButton");
     span=document.createElement("span");
     span.setAttribute("class","Counter");
-    span.innerHTML="10";
+    span.innerHTML="11";
     cmButton.appendChild(span);
 
 

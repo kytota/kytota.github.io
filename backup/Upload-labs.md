@@ -12,6 +12,7 @@
 -[pass07(空格绕过)](#pass07)
 -[pass08(点绕过)](#pass08)
 -[pass09pre(额外数据流ADS)](#pass09pre)
+-[pass09(::$DATA数据流绕过)](#pass09)
 
 
 # pass01
@@ -543,6 +544,54 @@ notepad 1.txt:word
 notepad 1.txt:document
 ```
 ![QQ20240825-222928](https://github.com/user-attachments/assets/b0c17b8c-b6ff-46f3-bce1-e611416de1a2)
+
+
+
+# pass09
+## 源代码展示
+```php
+$is_upload = false;
+$msg = null;
+if (isset($_POST['submit'])) {
+    if (file_exists($UPLOAD_ADDR)) {
+        $deny_ext = array(".php",".php5",".php4",".php3",".php2",".html",".htm",".phtml",".pHp",".pHp5",".pHp4",".pHp3",".pHp2",".Html",".Htm",".pHtml",".jsp",".jspa",".jspx",".jsw",".jsv",".jspf",".jtml",".jSp",".jSpx",".jSpa",".jSw",".jSv",".jSpf",".jHtml",".asp",".aspx",".asa",".asax",".ascx",".ashx",".asmx",".cer",".aSp",".aSpx",".aSa",".aSax",".aScx",".aShx",".aSmx",".cEr",".sWf",".swf",".htaccess");
+        $file_name = trim($_FILES['upload_file']['name']);
+        $file_name = deldot($file_name);//删除文件名末尾的点
+        $file_ext = strrchr($file_name, '.');
+        $file_ext = strtolower($file_ext); //转换为小写
+        $file_ext = trim($file_ext); //首尾去空
+        
+        if (!in_array($file_ext, $deny_ext)) {
+            if (move_uploaded_file($_FILES['upload_file']['tmp_name'], $UPLOAD_ADDR . '/' . $_FILES['upload_file']['name'])) {
+                $img_path = $UPLOAD_ADDR . '/' . $file_name;
+                $is_upload = true;
+            }
+        } else {
+            $msg = '此文件不允许上传';
+        }
+    } else {
+        $msg = $UPLOAD_ADDR . '文件夹不存在,请手工创建！';
+    }
+}
+```
+## 绕过策略分析
+可以看出此次网站并没有对文件后缀名进行去除‘::$DATA’字符串的操作；
+而在pass09pre中可以知道在加上::$DATA后，网站会认为这是一个数据流而不去检查文件的后缀名；因此我们可以顺利将文件送入后门，随后由于windows不允许后缀名有特殊字符":",所以在送入后门后后缀名会自动去掉‘::$DATA’而还原回原文件；
+
+## 绕过策略
+老规矩，先打开BP拦截；
+上传木马；
+进入BP抓包后修改filename的文件后缀名，加上::$DATA
+![QQ20240826-211038](https://github.com/user-attachments/assets/f4ac040e-765b-4719-acae-d5fd9ee5d96a)
+可以看到shan上传成功了，我们再进入网站文件上传目录看一看：
+![QQ20240826-211208](https://github.com/user-attachments/assets/839cf8be-c360-4899-bd32-1be38283f556)
+可以看到，::$DATA被自动过滤掉了，也就是说在windows帮助下，木马被成功还原了~
+注意：这是我们想要访问木马url时，文件名不要加上::$DATA哦，因为windows把这个字符串去掉了。
+![QQ20240826-211512](https://github.com/user-attachments/assets/dec0c1cb-b8ea-49b7-b6f0-02ce38d83034)
+
+
+
+
 
 
 
