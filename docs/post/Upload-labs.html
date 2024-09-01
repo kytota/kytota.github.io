@@ -99,7 +99,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 -<a href="#pass08">pass08(点绕过)</a><br>
 -<a href="#pass09pre">pass09pre(额外数据流ADS)</a><br>
 -<a href="#pass09">pass09(::$DATA数据流绕过)</a><br>
--<a href="#pass10">pass10(双写绕过)</a></p>
+-<a href="#pass10">pass10(双写绕过)</a><br>
+-<a href="#pass11">pass11pre(空字符)</a></p>
 <h1>pass01</h1>
 <h2>源码展示</h2>
 <div class="highlight highlight-text-html-basic"><pre class="notranslate">function checkFile() {
@@ -595,7 +596,19 @@ notepad 1.txt:document</pre></div>
 <p>假如我们想上传一个名为 pass.php的文件，由于网站会用黑名单对他进行匹配，直接上传的话，文件就会变成：pass.<br>
 那我们尝试双写呢？<br>
 pass.pphphp----&gt;pass.php（将裹在里面的php删掉后，pphphp变成了php）；<br>
-非常简单，不做赘述~</p></div>
+非常简单，不做赘述~</p>
+<h1>pass11pre</h1>
+<h2>空字符</h2>
+<p>php的许多底层语言都是c，而c有一个可利用的特性：空字符</p>
+<p>空字符的作用不止是一个不显示的字符，而且它是一把利刃，可以切掉从左到右自身后面的所有字符<br>
+比如：你好【空字符】世界 ----&gt;(c语言)----&gt;你好<br>
+“世界”就不见了；致敬传奇心之壁，AT-field！</p>
+<p>##空字符的使用<br>
+空字符有两种</p>
+<h3>%00</h3>
+<p>用于url编码，我们通常在文件存放路径使用get请求时使用它进行绕过；</p>
+<h3>0x00</h3>
+<p>用于编程语言，我们通常在文件存放路径使用post请求时使用它进行绕过。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
@@ -657,7 +670,7 @@ document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
 cmButton=document.getElementById("cmButton");
     span=document.createElement("span");
     span.setAttribute("class","Counter");
-    span.innerHTML="12";
+    span.innerHTML="13";
     cmButton.appendChild(span);
 
 
