@@ -98,7 +98,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 -<a href="#pass07">pass07(空格绕过)</a><br>
 -<a href="#pass08">pass08(点绕过)</a><br>
 -<a href="#pass09pre">pass09pre(额外数据流ADS)</a><br>
--<a href="#pass09">pass09(::$DATA数据流绕过)</a></p>
+-<a href="#pass09">pass09(::$DATA数据流绕过)</a><br>
+-<a href="#pass10">pass10(双写绕过)</a></p>
 <h1>pass01</h1>
 <h2>源码展示</h2>
 <div class="highlight highlight-text-html-basic"><pre class="notranslate">function checkFile() {
@@ -566,7 +567,35 @@ notepad 1.txt:document</pre></div>
 <a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/839cf8be-c360-4899-bd32-1be38283f556"><img src="https://github.com/user-attachments/assets/839cf8be-c360-4899-bd32-1be38283f556" alt="QQ20240826-211208" style="max-width: 100%;"></a><br>
 可以看到，::$DATA被自动过滤掉了，也就是说在windows帮助下，木马被成功还原了~<br>
 注意：这是我们想要访问木马url时，文件名不要加上::$DATA哦，因为windows把这个字符串去掉了。<br>
-<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/dec0c1cb-b8ea-49b7-b6f0-02ce38d83034"><img src="https://github.com/user-attachments/assets/dec0c1cb-b8ea-49b7-b6f0-02ce38d83034" alt="QQ20240826-211512" style="max-width: 100%;"></a></p></div>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/dec0c1cb-b8ea-49b7-b6f0-02ce38d83034"><img src="https://github.com/user-attachments/assets/dec0c1cb-b8ea-49b7-b6f0-02ce38d83034" alt="QQ20240826-211512" style="max-width: 100%;"></a></p>
+<h1>pass10</h1>
+<h2>源代码展示</h2>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span>is_upload</span> = <span class="pl-c1">false</span>;
+<span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-c1">null</span>;
+<span class="pl-k">if</span> (<span class="pl-en">isset</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_POST</span></span>[<span class="pl-s">'<span class="pl-s">submit</span>'</span>])) {
+    <span class="pl-k">if</span> (<span class="pl-en">file_exists</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span>)) {
+        <span class="pl-s1"><span class="pl-c1">$</span>deny_ext</span> = <span class="pl-en">array</span>(<span class="pl-s">"<span class="pl-s">php</span>"</span>,<span class="pl-s">"<span class="pl-s">php5</span>"</span>,<span class="pl-s">"<span class="pl-s">php4</span>"</span>,<span class="pl-s">"<span class="pl-s">php3</span>"</span>,<span class="pl-s">"<span class="pl-s">php2</span>"</span>,<span class="pl-s">"<span class="pl-s">html</span>"</span>,<span class="pl-s">"<span class="pl-s">htm</span>"</span>,<span class="pl-s">"<span class="pl-s">phtml</span>"</span>,<span class="pl-s">"<span class="pl-s">jsp</span>"</span>,<span class="pl-s">"<span class="pl-s">jspa</span>"</span>,<span class="pl-s">"<span class="pl-s">jspx</span>"</span>,<span class="pl-s">"<span class="pl-s">jsw</span>"</span>,<span class="pl-s">"<span class="pl-s">jsv</span>"</span>,<span class="pl-s">"<span class="pl-s">jspf</span>"</span>,<span class="pl-s">"<span class="pl-s">jtml</span>"</span>,<span class="pl-s">"<span class="pl-s">asp</span>"</span>,<span class="pl-s">"<span class="pl-s">aspx</span>"</span>,<span class="pl-s">"<span class="pl-s">asa</span>"</span>,<span class="pl-s">"<span class="pl-s">asax</span>"</span>,<span class="pl-s">"<span class="pl-s">ascx</span>"</span>,<span class="pl-s">"<span class="pl-s">ashx</span>"</span>,<span class="pl-s">"<span class="pl-s">asmx</span>"</span>,<span class="pl-s">"<span class="pl-s">cer</span>"</span>,<span class="pl-s">"<span class="pl-s">swf</span>"</span>,<span class="pl-s">"<span class="pl-s">htaccess</span>"</span>);
+
+        <span class="pl-s1"><span class="pl-c1">$</span>file_name</span> = <span class="pl-en">trim</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">name</span>'</span>]);
+        <span class="pl-s1"><span class="pl-c1">$</span>file_name</span> = <span class="pl-en">str_ireplace</span>(<span class="pl-s1"><span class="pl-c1">$</span>deny_ext</span>,<span class="pl-s">""</span>, <span class="pl-s1"><span class="pl-c1">$</span>file_name</span>);
+        <span class="pl-k">if</span> (<span class="pl-en">move_uploaded_file</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">tmp_name</span>'</span>], <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span> . <span class="pl-s">'<span class="pl-s">/</span>'</span> . <span class="pl-s1"><span class="pl-c1">$</span>file_name</span>)) {
+            <span class="pl-s1"><span class="pl-c1">$</span>img_path</span> = <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span> . <span class="pl-s">'<span class="pl-s">/</span>'</span> .<span class="pl-s1"><span class="pl-c1">$</span>file_name</span>;
+            <span class="pl-s1"><span class="pl-c1">$</span>is_upload</span> = <span class="pl-c1">true</span>;
+        }
+    } <span class="pl-k">else</span> {
+        <span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">UPLOAD_ADDR</span></span> . <span class="pl-s">'<span class="pl-s">文件夹不存在,请手工创建！</span>'</span>;
+    }
+}</pre></div>
+<h2>分析</h2>
+<p>关键在于这一句：</p>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span>file_name</span> = <span class="pl-en">str_ireplace</span>(<span class="pl-s1"><span class="pl-c1">$</span>deny_ext</span>,<span class="pl-s">""</span>, <span class="pl-s1"><span class="pl-c1">$</span>file_name</span>);</pre></div>
+<p>这句代码的意思是将我们上传的文件名与黑名单中的字符串进行比较，匹配上的就会被替换为空（被删掉）；<br>
+由于代码只执行一次，我们可以双写绕过；</p>
+<h2>绕过策略</h2>
+<p>假如我们想上传一个名为 pass.php的文件，由于网站会用黑名单对他进行匹配，直接上传的话，文件就会变成：pass.<br>
+那我们尝试双写呢？<br>
+pass.pphphp----&gt;pass.php（将裹在里面的php删掉后，pphphp变成了php）；<br>
+非常简单，不做赘述~</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
@@ -628,7 +657,7 @@ document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
 cmButton=document.getElementById("cmButton");
     span=document.createElement("span");
     span.setAttribute("class","Counter");
-    span.innerHTML="11";
+    span.innerHTML="12";
     cmButton.appendChild(span);
 
 

@@ -13,6 +13,7 @@
 -[pass08(点绕过)](#pass08)
 -[pass09pre(额外数据流ADS)](#pass09pre)
 -[pass09(::$DATA数据流绕过)](#pass09)
+-[pass10(双写绕过)](#pass10)
 
 
 # pass01
@@ -588,6 +589,44 @@ if (isset($_POST['submit'])) {
 可以看到，::$DATA被自动过滤掉了，也就是说在windows帮助下，木马被成功还原了~
 注意：这是我们想要访问木马url时，文件名不要加上::$DATA哦，因为windows把这个字符串去掉了。
 ![QQ20240826-211512](https://github.com/user-attachments/assets/dec0c1cb-b8ea-49b7-b6f0-02ce38d83034)
+
+
+
+
+# pass10
+## 源代码展示
+```php
+$is_upload = false;
+$msg = null;
+if (isset($_POST['submit'])) {
+    if (file_exists($UPLOAD_ADDR)) {
+        $deny_ext = array("php","php5","php4","php3","php2","html","htm","phtml","jsp","jspa","jspx","jsw","jsv","jspf","jtml","asp","aspx","asa","asax","ascx","ashx","asmx","cer","swf","htaccess");
+
+        $file_name = trim($_FILES['upload_file']['name']);
+        $file_name = str_ireplace($deny_ext,"", $file_name);
+        if (move_uploaded_file($_FILES['upload_file']['tmp_name'], $UPLOAD_ADDR . '/' . $file_name)) {
+            $img_path = $UPLOAD_ADDR . '/' .$file_name;
+            $is_upload = true;
+        }
+    } else {
+        $msg = $UPLOAD_ADDR . '文件夹不存在,请手工创建！';
+    }
+}
+```
+
+## 分析
+关键在于这一句：
+```php
+$file_name = str_ireplace($deny_ext,"", $file_name);
+```
+这句代码的意思是将我们上传的文件名与黑名单中的字符串进行比较，匹配上的就会被替换为空（被删掉）；
+由于代码只执行一次，我们可以双写绕过；
+
+## 绕过策略
+假如我们想上传一个名为 pass.php的文件，由于网站会用黑名单对他进行匹配，直接上传的话，文件就会变成：pass.
+那我们尝试双写呢？
+pass.pphphp---->pass.php（将裹在里面的php删掉后，pphphp变成了php）；
+非常简单，不做赘述~
 
 
 
