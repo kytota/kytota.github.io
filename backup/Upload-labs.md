@@ -14,7 +14,8 @@
 -[pass09pre(额外数据流ADS)](#pass09pre)
 -[pass09(::$DATA数据流绕过)](#pass09)
 -[pass10(双写绕过)](#pass10)
--[pass11pre(空字符)](#pass11)
+-[pass11pre(空字符)](#pass11pre)
+-[pass11(%00截断)](#pass11)
 
 
 # pass01
@@ -646,6 +647,69 @@ php的许多底层语言都是c，而c有一个可利用的特性：空字符
 用于url编码，我们通常在文件存放路径使用get请求时使用它进行绕过；
 ### 0x00
 用于编程语言，我们通常在文件存放路径使用post请求时使用它进行绕过。
+
+
+
+
+# pass11
+## 源代码展示
+```php
+$is_upload = false;
+$msg = null;
+if(isset($_POST['submit'])){
+    $ext_arr = array('jpg','png','gif');
+    $file_ext = substr($_FILES['upload_file']['name'],strrpos($_FILES['upload_file']['name'],".")+1);
+    if(in_array($file_ext,$ext_arr)){
+        $temp_file = $_FILES['upload_file']['tmp_name'];
+        $img_path = $_GET['save_path']."/".rand(10, 99).date("YmdHis").".".$file_ext;
+
+        if(move_uploaded_file($temp_file,$img_path)){
+            $is_upload = true;
+        }
+        else{
+            $msg = '上传失败！';
+        }
+    }
+    else{
+        $msg = "只允许上传.jpg|.png|.gif类型文件！";
+    }
+}
+```
+
+## 绕过策略分析
+我们注意到这句：
+```php
+$file_ext = substr($_FILES['upload_file']['name'],strrpos($_FILES['upload_file']['name'],".")+1);
+```
+substr(x,y)我们已经很了解了，就是从x的第y+1个位置开始(包括第y+1个字符)获得字符，比如：
+    substr('01234',2);就是从"01234“的第3个位置开始获得字符串，生成：‘234’；
+而strrpos(x,y)则是获取字符“y”在字符串"x"的位置，如：
+    strrpos('01234',2)就是从‘01234’中找到2出现的位置（从0开始），得到：2；
+所以我们上传一个pass.php，就会得到一个用于与白名单匹配的字符串“php”，而由于白名单的特性，之前的绕过就用不了了
+
+但是ちょっと待ってね、我们再看这一句：
+```php
+$img_path = $_GET['save_path']."/".rand(10, 99).date("YmdHis").".".$file_ext;
+```
+这是为我们上传的文件分配一个目的路径，而我们可以利用$_GET['save_path']配合空字符对目的路径进行魔改进行绕过；
+
+### 结论
+我们可以在save_path进行魔改，在其后面加上pass.php%00    
+pass.php是我想让木马叫的名字，而%00是对rand(10, 99).date("YmdHis").".".$file_ext进行截断；
+这样文件被上传的最终路径就会变成.../pass.php，这样我们上传一个符合白名单的文件，其最终就会变成名字叫pass.php的文件。
+
+## 绕过策略
+打开BP拦截；
+将我们的木马后缀名改为jpg，用于白名单放行；
+上传；
+来到BP进行修改，get请求的内容在第一行请求行内：
+![QQ20240901-214658](https://github.com/user-attachments/assets/da3aaa1e-39d3-4fd7-b17b-419d5f7d95ed)
+对其进行修改吧：
+![QQ20240901-214751](https://github.com/user-attachments/assets/2947cee9-d834-45fd-9873-c46abece305a)
+放行！
+![QQ20240901-214831](https://github.com/user-attachments/assets/d8dc4d05-632e-4313-b6cb-795e511b1060)
+上传成功~
+用蚁剑进行连接，也是一样的成功啊~
 
 
 

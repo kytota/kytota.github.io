@@ -100,7 +100,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 -<a href="#pass09pre">pass09pre(额外数据流ADS)</a><br>
 -<a href="#pass09">pass09(::$DATA数据流绕过)</a><br>
 -<a href="#pass10">pass10(双写绕过)</a><br>
--<a href="#pass11">pass11pre(空字符)</a></p>
+-<a href="#pass11pre">pass11pre(空字符)</a><br>
+-<a href="#pass11">pass11(%00截断)</a></p>
 <h1>pass01</h1>
 <h2>源码展示</h2>
 <div class="highlight highlight-text-html-basic"><pre class="notranslate">function checkFile() {
@@ -608,7 +609,56 @@ pass.pphphp----&gt;pass.php（将裹在里面的php删掉后，pphphp变成了ph
 <h3>%00</h3>
 <p>用于url编码，我们通常在文件存放路径使用get请求时使用它进行绕过；</p>
 <h3>0x00</h3>
-<p>用于编程语言，我们通常在文件存放路径使用post请求时使用它进行绕过。</p></div>
+<p>用于编程语言，我们通常在文件存放路径使用post请求时使用它进行绕过。</p>
+<h1>pass11</h1>
+<h2>源代码展示</h2>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span>is_upload</span> = <span class="pl-c1">false</span>;
+<span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-c1">null</span>;
+<span class="pl-k">if</span>(<span class="pl-en">isset</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_POST</span></span>[<span class="pl-s">'<span class="pl-s">submit</span>'</span>])){
+    <span class="pl-s1"><span class="pl-c1">$</span>ext_arr</span> = <span class="pl-en">array</span>(<span class="pl-s">'<span class="pl-s">jpg</span>'</span>,<span class="pl-s">'<span class="pl-s">png</span>'</span>,<span class="pl-s">'<span class="pl-s">gif</span>'</span>);
+    <span class="pl-s1"><span class="pl-c1">$</span>file_ext</span> = <span class="pl-en">substr</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">name</span>'</span>],<span class="pl-en">strrpos</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">name</span>'</span>],<span class="pl-s">"<span class="pl-s">.</span>"</span>)+<span class="pl-c1">1</span>);
+    <span class="pl-k">if</span>(<span class="pl-en">in_array</span>(<span class="pl-s1"><span class="pl-c1">$</span>file_ext</span>,<span class="pl-s1"><span class="pl-c1">$</span>ext_arr</span>)){
+        <span class="pl-s1"><span class="pl-c1">$</span>temp_file</span> = <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">tmp_name</span>'</span>];
+        <span class="pl-s1"><span class="pl-c1">$</span>img_path</span> = <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_GET</span></span>[<span class="pl-s">'<span class="pl-s">save_path</span>'</span>].<span class="pl-s">"<span class="pl-s">/</span>"</span>.<span class="pl-en">rand</span>(<span class="pl-c1">10</span>, <span class="pl-c1">99</span>).<span class="pl-en">date</span>(<span class="pl-s">"<span class="pl-s">YmdHis</span>"</span>).<span class="pl-s">"<span class="pl-s">.</span>"</span>.<span class="pl-s1"><span class="pl-c1">$</span>file_ext</span>;
+
+        <span class="pl-k">if</span>(<span class="pl-en">move_uploaded_file</span>(<span class="pl-s1"><span class="pl-c1">$</span>temp_file</span>,<span class="pl-s1"><span class="pl-c1">$</span>img_path</span>)){
+            <span class="pl-s1"><span class="pl-c1">$</span>is_upload</span> = <span class="pl-c1">true</span>;
+        }
+        <span class="pl-k">else</span>{
+            <span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-s">'<span class="pl-s">上传失败！</span>'</span>;
+        }
+    }
+    <span class="pl-k">else</span>{
+        <span class="pl-s1"><span class="pl-c1">$</span>msg</span> = <span class="pl-s">"<span class="pl-s">只允许上传.jpg|.png|.gif类型文件！</span>"</span>;
+    }
+}</pre></div>
+<h2>绕过策略分析</h2>
+<p>我们注意到这句：</p>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span>file_ext</span> = <span class="pl-en">substr</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">name</span>'</span>],<span class="pl-en">strrpos</span>(<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">name</span>'</span>],<span class="pl-s">"<span class="pl-s">.</span>"</span>)+<span class="pl-c1">1</span>);</pre></div>
+<p>substr(x,y)我们已经很了解了，就是从x的第y+1个位置开始(包括第y+1个字符)获得字符，比如：<br>
+substr('01234',2);就是从"01234“的第3个位置开始获得字符串，生成：‘234’；<br>
+而strrpos(x,y)则是获取字符“y”在字符串"x"的位置，如：<br>
+strrpos('01234',2)就是从‘01234’中找到2出现的位置（从0开始），得到：2；<br>
+所以我们上传一个pass.php，就会得到一个用于与白名单匹配的字符串“php”，而由于白名单的特性，之前的绕过就用不了了</p>
+<p>但是ちょっと待ってね、我们再看这一句：</p>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span>img_path</span> = <span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_GET</span></span>[<span class="pl-s">'<span class="pl-s">save_path</span>'</span>].<span class="pl-s">"<span class="pl-s">/</span>"</span>.<span class="pl-en">rand</span>(<span class="pl-c1">10</span>, <span class="pl-c1">99</span>).<span class="pl-en">date</span>(<span class="pl-s">"<span class="pl-s">YmdHis</span>"</span>).<span class="pl-s">"<span class="pl-s">.</span>"</span>.<span class="pl-s1"><span class="pl-c1">$</span>file_ext</span>;</pre></div>
+<p>这是为我们上传的文件分配一个目的路径，而我们可以利用$_GET['save_path']配合空字符对目的路径进行魔改进行绕过；</p>
+<h3>结论</h3>
+<p>我们可以在save_path进行魔改，在其后面加上pass.php%00<br>
+pass.php是我想让木马叫的名字，而%00是对rand(10, 99).date("YmdHis").".".$file_ext进行截断；<br>
+这样文件被上传的最终路径就会变成.../pass.php，这样我们上传一个符合白名单的文件，其最终就会变成名字叫pass.php的文件。</p>
+<h2>绕过策略</h2>
+<p>打开BP拦截；<br>
+将我们的木马后缀名改为jpg，用于白名单放行；<br>
+上传；<br>
+来到BP进行修改，get请求的内容在第一行请求行内：<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/da3aaa1e-39d3-4fd7-b17b-419d5f7d95ed"><img src="https://github.com/user-attachments/assets/da3aaa1e-39d3-4fd7-b17b-419d5f7d95ed" alt="QQ20240901-214658" style="max-width: 100%;"></a><br>
+对其进行修改吧：<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/2947cee9-d834-45fd-9873-c46abece305a"><img src="https://github.com/user-attachments/assets/2947cee9-d834-45fd-9873-c46abece305a" alt="QQ20240901-214751" style="max-width: 100%;"></a><br>
+放行！<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/d8dc4d05-632e-4313-b6cb-795e511b1060"><img src="https://github.com/user-attachments/assets/d8dc4d05-632e-4313-b6cb-795e511b1060" alt="QQ20240901-214831" style="max-width: 100%;"></a><br>
+上传成功~<br>
+用蚁剑进行连接，也是一样的成功啊~</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
@@ -670,7 +720,7 @@ document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
 cmButton=document.getElementById("cmButton");
     span=document.createElement("span");
     span.setAttribute("class","Counter");
-    span.innerHTML="13";
+    span.innerHTML="14";
     cmButton.appendChild(span);
 
 
