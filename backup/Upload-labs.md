@@ -16,6 +16,7 @@
 -[pass10(双写绕过)](#pass10)
 -[pass11pre(空字符)](#pass11pre)
 -[pass11(%00截断)](#pass11)
+-[pass12(0x00截断)](#pass12)
 
 
 # pass01
@@ -710,6 +711,55 @@ pass.php是我想让木马叫的名字，而%00是对rand(10, 99).date("YmdHis")
 ![QQ20240901-214831](https://github.com/user-attachments/assets/d8dc4d05-632e-4313-b6cb-795e511b1060)
 上传成功~
 用蚁剑进行连接，也是一样的成功啊~
+
+
+
+
+# pass12
+## 源代码分析
+```php
+$is_upload = false;
+$msg = null;
+if(isset($_POST['submit'])){
+    $ext_arr = array('jpg','png','gif');
+    $file_ext = substr($_FILES['upload_file']['name'],strrpos($_FILES['upload_file']['name'],".")+1);
+    if(in_array($file_ext,$ext_arr)){
+        $temp_file = $_FILES['upload_file']['tmp_name'];
+        $img_path = $_POST['save_path']."/".rand(10, 99).date("YmdHis").".".$file_ext;
+
+        if(move_uploaded_file($temp_file,$img_path)){
+            $is_upload = true;
+        }
+        else{
+            $msg = "上传失败";
+        }
+    }
+    else{
+        $msg = "只允许上传.jpg|.png|.gif类型文件！";
+    }
+}
+```
+
+## 绕过分析
+可以看出，此次网站的防御策略的上一关（%00截断）的差别只有上传路径的获取；上一关是使用GET，而此次使用的是POST，虽然只是一个在请求头一个在请求体，但是操作起来还是有一些别的小差别。
+
+## 绕过策略
+老规矩，开BP抓包拦截。
+上传一个后缀名为白名单内的木马文件。
+进入BP查看请求包。
+![QQ20240910-170742](https://github.com/user-attachments/assets/9d342bd8-ad51-4a05-8c9e-45b808613b23)
+可以看到上传路径的位置。
+按照我们的老思路，将save_path进行修改，但注意，在BP请求体是无法直接加空字符的（至少我不会），所以我们先改想要的文件名一个很夸张很具有辨识度的名字：11111111111.php,并在其后面加上一个+；
+这时候我们看看这个文件名的16进制如何表示：其中HEX一栏表示16进制，hex中的0x也是16进制的意思（我啰嗦了）。
+在BP修改后我们看看这个请求包的hex，并在其中找到我们的上传路径在哪：
+![QQ20240910-171331](https://github.com/user-attachments/assets/7201687c-916f-4211-969b-3c4430cd401e)
+还是很好找的，一堆31开头，2b结尾。
+然后我们将2b改为00；可以看到.php后面的+不见了，鼠标左键选中一下会发现右边隐隐约约还有什么东西，那就是空字符了：
+![QQ20240910-171455](https://github.com/user-attachments/assets/23a44b5b-8269-47d8-a6e1-4a8e6828efb7)
+
+到这就可以提前开香槟了，我们直接放行请求包吧。
+
+
 
 
 
