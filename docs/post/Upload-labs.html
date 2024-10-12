@@ -697,7 +697,14 @@ pass.php是我想让木马叫的名字，而%00是对rand(10, 99).date("YmdHis")
 还是很好找的，一堆31开头，2b结尾。<br>
 然后我们将2b改为00；可以看到.php后面的+不见了，鼠标左键选中一下会发现右边隐隐约约还有什么东西，那就是空字符了：<br>
 <a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/23a44b5b-8269-47d8-a6e1-4a8e6828efb7"><img src="https://github.com/user-attachments/assets/23a44b5b-8269-47d8-a6e1-4a8e6828efb7" alt="QQ20240910-171455" style="max-width: 100%;"></a></p>
-<p>到这就可以提前开香槟了，我们直接放行请求包吧。</p></div>
+<p>到这就可以提前开香槟了，我们直接放行请求包吧。</p>
+<h1>pass13（图片马制作）前置</h1>
+<p>JPEG/JFIF(常见的照片格式):头两个字节为·0xFF·0xD8。<br>
+PNG(无损压缩格式):头两个字节为·0x89·0x50。<br>
+GIF(支持动画的图像格式):头两个字节为·0x47.0x49。<br>
+BMP(Windows位图格式):头两个字节为·0x42·0x4D。<br>
+TIFF(标签图像文件格式):头两个字节可以是不同的数值。</p>
+<p>另外 图片马的制作，我推荐使用vscode扩展中的hex编辑器，，winHEX应该也可以用，我没有试过。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
@@ -759,7 +766,7 @@ document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
 cmButton=document.getElementById("cmButton");
     span=document.createElement("span");
     span.setAttribute("class","Counter");
-    span.innerHTML="15";
+    span.innerHTML="16";
     cmButton.appendChild(span);
 
 
