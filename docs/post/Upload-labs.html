@@ -161,8 +161,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 }</pre></div>
 <h2>分析</h2>
 <p>从代码格式就可以看出这是后端的检测了，查看代码可以知道，只放行类型为</p>
-<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == <span class="pl-s">'<span class="pl-s">image/jpeg</span>'</span>) || (<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == <span class="pl-s">'<span class="pl-s">image/png</span>'</span>) || (<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == '<span class="pl-s">image/gif</span>
-<span class="pl-s"></span></pre></div>
+<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == <span class="pl-s">'<span class="pl-s">image/jpeg</span>'</span>) || (<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == <span class="pl-s">'<span class="pl-s">image/png</span>'</span>) || (<span class="pl-s1"><span class="pl-c1">$</span><span class="pl-c1">_FILES</span></span>[<span class="pl-s">'<span class="pl-s">upload_file</span>'</span>][<span class="pl-s">'<span class="pl-s">type</span>'</span>] == 'image/gif</pre></div>
 <p>的文件，那这一句话是什么意思呢？询问gpt可以得知：</p>
 <h3>1 $_FILES['upload_file']['type']</h3>
 <p>$_FILES['upload_file']['type']是一个PHP超全局数组，用于处理通过HTTP POST方法上传的文件，假如我上传一个名为pass.php的文件夹</p>
@@ -171,7 +170,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     <span class="pl-s">'<span class="pl-s">type</span>'</span> =&gt; <span class="pl-s">'<span class="pl-s">text/plain</span>'</span>,        <span class="pl-c">// 文件的 MIME 类型（取决于服务器和浏览器的判断）</span>
     <span class="pl-s">'<span class="pl-s">tmp_name</span>'</span> =&gt; <span class="pl-s">'<span class="pl-s">/tmp/phpYzdqkD</span>'</span>,<span class="pl-c">// 文件上传后的临时存储路径</span>
     <span class="pl-s">'<span class="pl-s">error</span>'</span> =&gt; <span class="pl-c1">0</span>,                  <span class="pl-c">// 上传过程中出现的错误代码，0 表示没有错误</span>
-    <span class="pl-s">'<span class="pl-s">size</span>'</span> =&gt; <span class="pl-c1">1234</span>                 // 文件的大小（以字节为单位）
+    <span class="pl-s">'<span class="pl-s">size</span>'</span> =&gt; <span class="pl-c1">1234</span>                 <span class="pl-c">// 文件的大小（以字节为单位）</span>
 );</pre></div>
 <p>所以这串代码是先选择包含上传文件信息的upload_files，再选择其中的type</p>
 <h3>2 MIME类型</h3>
@@ -241,14 +240,14 @@ nts是非多线程安全，ts是多线程安全，无需深究（因为我也不
 进入文件，搜索 AddType application/x-httpd-php .php ，会找到一行被注释的代码<br>
 <a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/a4520998-9342-47d9-8e9e-d692c98963a7"><img src="https://github.com/user-attachments/assets/a4520998-9342-47d9-8e9e-d692c98963a7" alt="QQ20240820-000812" style="max-width: 100%;"></a><br>
 这段代码的意思是，将.pho后缀名的文件作为php解析。所以我们将#号删掉，在代码后加上我们想用于绕过的文件的后缀名：php3,php5,phtml。其实这时候你加上jpg和png后缀然后用图片上传木马也可以了，但我们还是按照靶场的思路来。修改此行代码为：</p>
-<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-v">AddType</span> application/x-httpd-php .php .phtml .php3 .php5</pre></div>
+<div class="highlight highlight-text-html-php"><pre class="notranslate">AddType application/x-httpd-php .php .phtml .php3 .php5</pre></div>
 <h4>不可行原因</h4>
 <p>看了以上两点我们应该会有感想：我修改配置文件是为了上传木马，可为了能上传木马我需要强大到可以修改配置文件。。。这就是这一关的不可行性了，但是这一关的思路：利用配置文件中的addtype和网站的黑名单漏洞，是具有可行性的，下一关我们将用.htaccess文件使这个想法具备可行性。</p>
 <h3>开始绕过</h3>
 <p>准备好我们的木马文件，老规矩，打开BP的拦截，上传文件，抓包，修改filename的后缀名为php3，放行，会发现文件就上传成功了。验证上传是否成功的方式和前两关一模一样，不再做赘述。</p>
 <div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p>最后再次提醒，请读懂下面这行代码：</p>
 </div>
-<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-v">AddType</span> application/x-httpd-php .php .phtml</pre></div>
+<div class="highlight highlight-text-html-php"><pre class="notranslate">AddType application/x-httpd-php .php .phtml</pre></div>
 <h1>pass04</h1>
 <h2>源代码展示</h2>
 <div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-s1"><span class="pl-c1">$</span>is_upload</span> = <span class="pl-c1">false</span>;
@@ -279,7 +278,7 @@ nts是非多线程安全，ts是多线程安全，无需深究（因为我也不
 <p>相较于第三关，这次网站在前者的基础上把php3等文件后缀名也纳入了黑名单。</p>
 <h1>解决方案</h1>
 <p>第三关为了使php3,php5,phtml文件被当做php文件解析，我们进入了apache的httpd-conf进行配置文件的修改，修改了代码</p>
-<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-v">AddType</span> application/x-httpd-php</pre></div>
+<div class="highlight highlight-text-html-php"><pre class="notranslate">AddType application/x-httpd-php</pre></div>
 <p>并且在其后方加上了.php3 .php5来使这类文件作为php文件被浏览器进行解析。事实上，httpd-conf的功能可以通过.htaccess文件来实现。</p>
 <h2>httpd-conf和.htaceess文件的区别</h2>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/f24c2e86-b43d-40c1-b825-d95271243d9c"><img src="https://github.com/user-attachments/assets/f24c2e86-b43d-40c1-b825-d95271243d9c" alt="QQ20240822-181439" style="max-width: 100%;"></a><br>
@@ -287,7 +286,7 @@ nts是非多线程安全，ts是多线程安全，无需深究（因为我也不
 省流来说，apache中：一、httpd-conf是全局配置文件，而.htaceess是作用于其所在目录及其子目录中的配置文件；二、httpd-conf需要管理员级别的权限才能进行修改，且修改后需要重启服务器才能生效，而.htaccess文件可以通过我们的文本编辑器进行修改，且修改后即刻生效。</p>
 <h2>如何上传.htaccess文件</h2>
 <p>首先，我们要知道，我们上传.htaccess文件是为了修改网站的配置，让我们上传除了黑名单以外的文件类型时，仍然能够作为php文件进行解析。根据第三关我们知道，这涉及到</p>
-<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-v">AddType</span> application/x-httpd-php .php <span class="pl-c"># 增加这一类型的应用解释</span></pre></div>
+<div class="highlight highlight-text-html-php"><pre class="notranslate">AddType application/x-httpd-php .php <span class="pl-c"># 增加这一类型的应用解释</span></pre></div>
 <p>这一行代码，我们需要对其进行修改。但是这一配置已经在httpd-conf中，这时候我们再上传一个.htaccess对其进行修改，就涉及到对httpd-conf的override（覆盖）了，而httpd-conf中有一个变量AllowOverride，其值为None时是不允许对httpd-conf进行覆盖重写的，所以进入httpd-conf搜索AllowOverride查看其值，若是None就改为all即可。</p>
 <h2>绕过展示</h2>
 <h3>1.写一个.htaccess文件</h3>
@@ -345,14 +344,14 @@ nts是非多线程安全，ts是多线程安全，无需深究（因为我也不
 <h2>分析绕过策略</h2>
 <p>注意到，本次网站禁止了.htaccess文件的上传。基于pass04pre的讲解，我们可以使用.user.ini进行绕过</p>
 <h3>.user.ini写法</h3>
-<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-v">Auto_prepend_file</span>=xxx.xxx <span class="pl-c">#使所有当前目录及其子目录中的php文件优先包含xxx.xxx这个文件（即将xxx.xxx文件加入每个在目录范围内的php文件，跟着php文件一同被以php的方式解析）</span></pre></div>
+<div class="highlight highlight-text-html-php"><pre class="notranslate">Auto_prepend_file=xxx.xxx <span class="pl-c">#使所有当前目录及其子目录中的php文件优先包含xxx.xxx这个文件（即将xxx.xxx文件加入每个在目录范围内的php文件，跟着php文件一同被以php的方式解析）</span></pre></div>
 <h2>绕过策略</h2>
 <p>首先，检查我们的靶场文件的upload文件夹中是否已经有readme.php文件，这本应该是靶场内置的，但是由于我们获取靶场的方式各有不同，所以可能有人没有这个php文件（比如我就压根没有upload这个上传文件夹，upload文件夹都是我自己创建的，更别指望里面会有自带的readme.php了），没有这个文件的话我们创建一个空readme.php文件即可（当然不一定非得名字叫readme，举一反三嘛），因为正如pass05pre中所说，.user,ini文件要生效的话，其所在目录必须包含php文件。<br>
 <a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/dcddda10-d53f-4a92-b46a-863dfbcf4f5d"><img src="https://github.com/user-attachments/assets/dcddda10-d53f-4a92-b46a-863dfbcf4f5d" alt="QQ20240824-224350" style="max-width: 100%;"></a><br>
 确保uoload路径下有可用的php文件后，我们开始编写.user.ini</p>
 <h3>.user.ini从创建到使用</h3>
 <h4>写法</h4>
-<div class="highlight highlight-text-html-php"><pre class="notranslate"><span class="pl-v">Auto_prepend_file</span>=pass.jpg <span class="pl-c">#这里我所用的木马名是pass.jpg</span></pre></div>
+<div class="highlight highlight-text-html-php"><pre class="notranslate">Auto_prepend_file=pass.jpg <span class="pl-c">#这里我所用的木马名是pass.jpg</span></pre></div>
 <p>写好后上传，由于黑名单中未包含.user,ini，所以很顺利的，上传成功。<br>
 （上传成功）</p>
 <h4>运用</h4>
