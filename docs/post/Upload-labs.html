@@ -286,7 +286,7 @@ nts是非多线程安全，ts是多线程安全，无需深究（因为我也不
 省流来说，apache中：一、httpd-conf是全局配置文件，而.htaceess是作用于其所在目录及其子目录中的配置文件；二、httpd-conf需要管理员级别的权限才能进行修改，且修改后需要重启服务器才能生效，而.htaccess文件可以通过我们的文本编辑器进行修改，且修改后即刻生效。</p>
 <h2>如何上传.htaccess文件</h2>
 <p>首先，我们要知道，我们上传.htaccess文件是为了修改网站的配置，让我们上传除了黑名单以外的文件类型时，仍然能够作为php文件进行解析。根据第三关我们知道，这涉及到</p>
-<div class="highlight highlight-text-html-php"><pre class="notranslate">AddType application/x-httpd-php .php <span class="pl-c"># <span class="pl-s1">增加这一类型的应用解释</span></span></pre></div>
+<div class="highlight highlight-text-html-php"><pre class="notranslate">AddType application/x-httpd-php .php <span class="pl-c"># 增加这一类型的应用解释</span></pre></div>
 <p>这一行代码，我们需要对其进行修改。但是这一配置已经在httpd-conf中，这时候我们再上传一个.htaccess对其进行修改，就涉及到对httpd-conf的override（覆盖）了，而httpd-conf中有一个变量AllowOverride，其值为None时是不允许对httpd-conf进行覆盖重写的，所以进入httpd-conf搜索AllowOverride查看其值，若是None就改为all即可。</p>
 <h2>绕过展示</h2>
 <h3>1.写一个.htaccess文件</h3>
@@ -344,14 +344,14 @@ nts是非多线程安全，ts是多线程安全，无需深究（因为我也不
 <h2>分析绕过策略</h2>
 <p>注意到，本次网站禁止了.htaccess文件的上传。基于pass04pre的讲解，我们可以使用.user.ini进行绕过</p>
 <h3>.user.ini写法</h3>
-<div class="highlight highlight-text-html-php"><pre class="notranslate">Auto_prepend_file=xxx.xxx <span class="pl-c">#<span class="pl-s1">使所有当前目录及其子目录中的php文件优先包含xxx</span>.<span class="pl-c1">xxx这个文件</span>（<span class="pl-s1">即将xxx</span>.<span class="pl-c1">xxx文件加入每个在目录范围内的php文件</span>，<span class="pl-s1">跟着php文件一同被以php的方式解析</span>）</span></pre></div>
+<div class="highlight highlight-text-html-php"><pre class="notranslate">Auto_prepend_file=xxx.xxx <span class="pl-c">#使所有当前目录及其子目录中的php文件优先包含xxx.xxx这个文件（即将xxx.xxx文件加入每个在目录范围内的php文件，跟着php文件一同被以php的方式解析）</span></pre></div>
 <h2>绕过策略</h2>
 <p>首先，检查我们的靶场文件的upload文件夹中是否已经有readme.php文件，这本应该是靶场内置的，但是由于我们获取靶场的方式各有不同，所以可能有人没有这个php文件（比如我就压根没有upload这个上传文件夹，upload文件夹都是我自己创建的，更别指望里面会有自带的readme.php了），没有这个文件的话我们创建一个空readme.php文件即可（当然不一定非得名字叫readme，举一反三嘛），因为正如pass05pre中所说，.user,ini文件要生效的话，其所在目录必须包含php文件。<br>
 <a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/dcddda10-d53f-4a92-b46a-863dfbcf4f5d"><img src="https://github.com/user-attachments/assets/dcddda10-d53f-4a92-b46a-863dfbcf4f5d" alt="QQ20240824-224350" style="max-width: 100%;"></a><br>
 确保uoload路径下有可用的php文件后，我们开始编写.user.ini</p>
 <h3>.user.ini从创建到使用</h3>
 <h4>写法</h4>
-<div class="highlight highlight-text-html-php"><pre class="notranslate">Auto_prepend_file=pass.jpg <span class="pl-c">#<span class="pl-s1">这里我所用的木马名是pass</span>.<span class="pl-c1">jpg</span></span></pre></div>
+<div class="highlight highlight-text-html-php"><pre class="notranslate">Auto_prepend_file=pass.jpg <span class="pl-c">#这里我所用的木马名是pass.jpg</span></pre></div>
 <p>写好后上传，由于黑名单中未包含.user,ini，所以很顺利的，上传成功。<br>
 （上传成功）</p>
 <h4>运用</h4>
